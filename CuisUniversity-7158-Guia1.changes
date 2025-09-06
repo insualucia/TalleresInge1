@@ -154936,6 +154936,7 @@ TestBooleanos class
 
 ----SNAPSHOT----(19 August 2025 22:00:42) CuisUniversity-7158-Guia1.image priorSource: 6564966!
 
+<<<<<<< HEAD
 ----STARTUP---- (21 August 2025 17:27:25) as /home/ale/CuisUniversity/linux64/CuisUniversity-7158-Guia1.image!
 
 !TestBooleanos class methodsFor: 'tests' stamp: 'Ale 8/21/2025 17:30:03'!
@@ -155086,3 +155087,180 @@ test14VerdaderosiFalso
 ----SNAPSHOT----(21 August 2025 17:46:05) CuisUniversity-7158-Guia1.image priorSource: 6570607!
 
 ----QUIT----(21 August 2025 17:46:21) CuisUniversity-7158-Guia1.image priorSource: 6570704!
+=======
+----STARTUP---- (5 September 2025 20:31:23) as /home/lucia/Inge/linux64/linux64/CuisUniversity-7158-Guia1.image!
+
+
+ObjectBuilder create: #I asChildOf: DenotativeObject collaboratorNames: '' in: 'Ejercicio 4'!
+
+!classDefinition: #I category: #'Ejercicio 4' stamp: 'lu 9/5/2025 20:32:36'!
+DenotativeObject subclass: #I
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Ejercicio 4'!
+
+!classDefinition: 'I class' category: #'Ejercicio 4' stamp: 'lu 9/5/2025 20:32:36'!
+I class
+	instanceVariableNames: ''!
+!I class methodsFor: 'otros' stamp: 'lu 9/5/2025 20:40:49'!
+ next
+
+	^1.! !
+
+!methodRemoval: I class #next stamp: 'lu 9/5/2025 20:50:17'!
+next
+
+	^1.!
+
+ObjectBuilder create: #II asChildOf: DenotativeObject collaboratorNames: '' in: 'Ejercicio 4'!
+
+!classDefinition: #II category: #'Ejercicio 4' stamp: 'lu 9/5/2025 20:50:26'!
+DenotativeObject subclass: #II
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Ejercicio 4'!
+
+!classDefinition: 'II class' category: #'Ejercicio 4' stamp: 'lu 9/5/2025 20:50:26'!
+II class
+	instanceVariableNames: ''!
+!I class methodsFor: 'next' stamp: 'lu 9/5/2025 20:56:11'!
+ next
+	^II.! !
+
+''!
+!II class methodsFor: 'next & previous' stamp: 'lu 9/5/2025 20:58:46'!
+      next
+	
+	^ self cloneNamed: self name,'I'.! !
+
+DenotativeObject subclass: #III
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Ejercicio 4'!
+
+!classDefinition: #III category: #'Ejercicio 4' stamp: 'lu 9/5/2025 20:58:55'!
+DenotativeObject subclass: #III
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Ejercicio 4'!
+
+III class
+	instanceVariableNames: ''!
+
+!classDefinition: 'III class' category: #'Ejercicio 4' stamp: 'lu 9/5/2025 20:58:55'!
+III class
+	instanceVariableNames: ''!
+!III class methodsFor: 'next & previous' stamp: 'lu 9/5/2025 20:58:55'!
+                next
+	
+	^ self cloneNamed: self name,'I'.! !
+
+!classRemoval: #III stamp: 'lu 9/5/2025 21:00:36'!
+DenotativeObject subclass: #III
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Ejercicio 4'!
+
+II
+	collaboratorNames: 'next'
+	in: 'Ejercicio 4'!
+
+!classDefinition: 'II class' category: #'Ejercicio 4' stamp: 'lu 9/5/2025 21:00:49'!
+II class
+	instanceVariableNames: 'next'!
+
+!classDefinition: #II category: #'Ejercicio 4' stamp: 'lu 9/5/2025 21:00:49'!
+DenotativeObject subclass: #II
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Ejercicio 4'!
+
+!classDefinition: 'II class' category: #'Ejercicio 4' stamp: 'lu 9/5/2025 21:00:49'!
+II class
+	instanceVariableNames: 'next'!
+!II class methodsFor: 'next & previous' stamp: 'lu 9/5/2025 21:05:14' prior: 50536849!
+   next
+	next ifNotNil: [^next].
+	next := self cloneNamed: self name,'I'.
+	next previous: self.
+	
+	^next.! !
+
+II
+	collaboratorNames: 'next previous'
+	in: 'Ejercicio 4'!
+
+!classDefinition: 'II class' category: #'Ejercicio 4' stamp: 'lu 9/5/2025 21:05:37'!
+II class
+	instanceVariableNames: 'next previous'!
+
+!classDefinition: #II category: #'Ejercicio 4' stamp: 'lu 9/5/2025 21:05:37'!
+DenotativeObject subclass: #II
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Ejercicio 4'!
+
+!classDefinition: 'II class' category: #'Ejercicio 4' stamp: 'lu 9/5/2025 21:05:37'!
+II class
+	instanceVariableNames: 'next previous'!
+!II class methodsFor: 'next & previous' stamp: 'lu 9/5/2025 21:06:42'!
+                  previous
+	^previous.! !
+!II class methodsFor: 'next & previous' stamp: 'lu 9/5/2025 21:08:02'!
+ previous: numAnterior
+	previous := numAnterior.
+	
+	^previous.! !
+!II class methodsFor: 'next & previous' stamp: 'lu 9/5/2025 21:08:22' prior: 50536921!
+        previous: numAnterior
+	previous := numAnterior.
+	! !
+!I class methodsFor: 'artimeticos' stamp: 'lu 9/5/2025 21:12:11'!
+         + sumando
+	
+	^sumando next.! !
+!I class methodsFor: 'artimeticos' stamp: 'lu 9/5/2025 21:17:40'!
+                               - restando
+
+  ^ restando previuos.! !
+
+!methodRemoval: I class #- stamp: 'lu 9/5/2025 21:19:11'!
+- restando
+
+  ^ restando previuos.!
+!I class methodsFor: 'artimeticos' stamp: 'lu 9/5/2025 21:20:25'!
+                         * multiplicando
+
+ ^multiplicando.! !
+!II class methodsFor: 'aritmeticas' stamp: 'lu 9/5/2025 21:22:39'!
+                        + sumando
+
+^ self previous + sumando next.! !
+!I class methodsFor: 'next' stamp: 'lu 9/5/2025 21:23:24' prior: 50536846!
+       next
+	II previous: self.
+	^II.! !
+!II class methodsFor: 'aritmeticas' stamp: 'lu 9/5/2025 21:28:33'!
+                           - restando
+	(restando = I )ifTrue: [^self previous].
+
+^ self previous - restando previous.! !
+!II class methodsFor: 'aritmeticas' stamp: 'lu 9/5/2025 21:38:19'!
+                               * multiplicando
+	(multiplicando = I)ifTrue: [^self.]
+
+^ self + (self * multiplicando previous).! !
+!II class methodsFor: 'aritmeticas' stamp: 'lu 9/5/2025 21:47:27'!
+                          / divisor
+
+	(divisor = I)ifTrue: [^self].! !
+
+----SNAPSHOT----(5 September 2025 21:50:22) CuisUniversity-7158-Guia1.image priorSource: 6565063!
+>>>>>>> d88a08f (ej 4 sin terminar division)
