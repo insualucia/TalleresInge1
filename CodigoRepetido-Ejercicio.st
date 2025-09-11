@@ -46,12 +46,11 @@ numberOfSuspendedCustomers
 	
 	^suspended size! !
 
-!CustomerBook methodsFor: 'customer management' stamp: 'Ale 9/11/2025 19:54:13'!
+!CustomerBook methodsFor: 'customer management' stamp: 'Ale 9/11/2025 20:46:21'!
 removeCustomerNamed: aName 
-	|mismoNombre|
-	mismoNombre := [:nombreCliente| aName = nombreCliente].
-	active removeAllSuchThat: mismoNombre.
-	suspended removeAllSuchThat: mismoNombre.! !
+
+	active remove: aName ifAbsent: [suspended remove: aName ifAbsent:[^ NotFound signal] ]
+! !
 
 !CustomerBook methodsFor: 'customer management' stamp: 'HernanWilkinson 7/6/2011 17:52'!
 signalCustomerAlreadyExists 
@@ -154,7 +153,7 @@ test03CanNotAddACustomerWithEmptyName
 	
 	self accionAVerificarFalla: [ customerBook addCustomerNamed: ''] tipoDeFallaEsperada:Error  condicionAVerificar1: [ :anError | anError messageText = CustomerBook customerCanNotBeEmptyErrorMessage] condicionAVerificar2: [:anError | customerBook isEmpty ]! !
 
-!CustomerBookTest methodsFor: 'testing' stamp: 'Ale 9/11/2025 18:14:01'!
+!CustomerBookTest methodsFor: 'testing' stamp: 'Ale 9/11/2025 20:08:51'!
 test04CanNotRemoveAnInvalidCustomer
 	
 	| customerBook johnLennon |
@@ -163,10 +162,9 @@ test04CanNotRemoveAnInvalidCustomer
 	johnLennon := 'John Lennon'.
 	customerBook addCustomerNamed: johnLennon.
 	
-	self accionAVerificarFalla: [ customerBook removeCustomerNamed: 'Paul McCartney'.] tipoDeFallaEsperada: NotFound condicionAVerificar1: [:anError |customerBook numberOfCustomers = 1] condicionAVerificar2: [:anError | customerBook includesCustomerNamed: johnLennon]
-! !
+	self accionAVerificarFalla: [ customerBook removeCustomerNamed: 'Paul McCartney'.] tipoDeFallaEsperada: NotFound condicionAVerificar1: [:anError |customerBook numberOfCustomers = 1] condicionAVerificar2: [:anError | customerBook includesCustomerNamed: johnLennon].! !
 
-!CustomerBookTest methodsFor: 'testing' stamp: 'Ale 9/11/2025 18:46:38'!
+!CustomerBookTest methodsFor: 'testing' stamp: 'Ale 9/11/2025 20:57:28'!
 test05SuspendingACustomerShouldNotRemoveItFromCustomerBook
 
 	| customerBook paulMcCartney|
@@ -177,10 +175,10 @@ test05SuspendingACustomerShouldNotRemoveItFromCustomerBook
 	customerBook addCustomerNamed: paulMcCartney.
 	customerBook suspendCustomerNamed: paulMcCartney.
 	
-	self customerBookAVerificar: customerBook cantClientesActivosEsperados: 0 cantClientesSuspendidosEsperados: 1 cantClientesEsperados: 1 paulMcCartneyEsCliente: True.	
+	self customerBookAVerificar: customerBook cantClientesActivosEsperados: 0 cantClientesSuspendidosEsperados: 1 cantClientesEsperados: 1 paulMcCartneyEsCliente: true.	
 ! !
 
-!CustomerBookTest methodsFor: 'testing' stamp: 'Ale 9/11/2025 18:46:52'!
+!CustomerBookTest methodsFor: 'testing' stamp: 'Ale 9/11/2025 20:57:36'!
 test06RemovingASuspendedCustomerShouldRemoveItFromCustomerBook
 
 	| customerBook paulMcCartney|
@@ -192,7 +190,7 @@ test06RemovingASuspendedCustomerShouldRemoveItFromCustomerBook
 	customerBook suspendCustomerNamed: paulMcCartney.
 	customerBook removeCustomerNamed: paulMcCartney.
 	
-	self customerBookAVerificar: customerBook cantClientesActivosEsperados:0 cantClientesSuspendidosEsperados:0 cantClientesEsperados:0 paulMcCartneyEsCliente:False.
+	self customerBookAVerificar: customerBook cantClientesActivosEsperados:0 cantClientesSuspendidosEsperados:0 cantClientesEsperados:0 paulMcCartneyEsCliente:false.
 	
 ! !
 
@@ -207,14 +205,14 @@ test08CanNotSuspendAnAlreadySuspendedCustomer
 	self verificarFallaSuspendiendoA: 'John Lennon'.! !
 
 
-!CustomerBookTest methodsFor: 'assertsCasosErrores' stamp: 'Ale 9/11/2025 18:13:43'!
+!CustomerBookTest methodsFor: 'assertsCasosErrores' stamp: 'Ale 9/11/2025 20:13:23'!
 accionAVerificarFalla: accionAFallar tipoDeFallaEsperada: tipoFalla condicionAVerificar1: condicionAVerificar1 condicionAVerificar2:condicionAVerificar2
 	[ accionAFallar value.
 	self fail ]
 			on: tipoFalla 
 			do: [ :anError | 
 				self assert: (condicionAVerificar1 value:anError).
-				self assert: (condicionAVerificar2 value: anError) ]! !
+				self assert: (condicionAVerificar2 value:anError)].! !
 
 !CustomerBookTest methodsFor: 'assertsCasosErrores' stamp: 'Ale 9/11/2025 18:14:21'!
 verificarFallaSuspendiendoA: clienteASuspender
