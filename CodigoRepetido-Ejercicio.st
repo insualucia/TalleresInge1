@@ -162,21 +162,16 @@ test02RemovingCustomerShouldNotTakeMoreThan100Milliseconds
 	self accionATestear: [customerBook removeCustomerNamed: paulMcCartney] maxMilisegundosATardar: (100 * millisecond)	
 ! !
 
-!CustomerBookTest methodsFor: 'testing' stamp: 'HernanWilkinson 5/9/2012 18:12'!
+!CustomerBookTest methodsFor: 'testing' stamp: 'Ale 9/11/2025 18:13:55'!
 test03CanNotAddACustomerWithEmptyName 
 
 	| customerBook |
 			
 	customerBook := CustomerBook new.
+	
+	self accionAVerificarFalla: [ customerBook addCustomerNamed: ''] tipoDeFallaEsperada:Error  condicionAVerificar1: [ :anError | anError messageText = CustomerBook customerCanNotBeEmptyErrorMessage] condicionAVerificar2: [:anError | customerBook isEmpty ]! !
 
-	[ customerBook addCustomerNamed: ''.
-	self fail ]
-		on: Error 
-		do: [ :anError | 
-			self assert: anError messageText = CustomerBook customerCanNotBeEmptyErrorMessage.
-			self assert: customerBook isEmpty ]! !
-
-!CustomerBookTest methodsFor: 'testing' stamp: 'Ale 9/11/2025 17:23:25'!
+!CustomerBookTest methodsFor: 'testing' stamp: 'Ale 9/11/2025 18:14:01'!
 test04CanNotRemoveAnInvalidCustomer
 	
 	| customerBook johnLennon |
@@ -185,7 +180,7 @@ test04CanNotRemoveAnInvalidCustomer
 	johnLennon := 'John Lennon'.
 	customerBook addCustomerNamed: johnLennon.
 	
-	self accionAVerificarFalla: [ customerBook removeCustomerNamed: 'Paul McCartney'.] tipoDeFallaEsperada: NotFound condicionAVerificar1: [customerBook numberOfCustomers = 1] condicionAVerificar2: [customerBook includesCustomerNamed: johnLennon]
+	self accionAVerificarFalla: [ customerBook removeCustomerNamed: 'Paul McCartney'.] tipoDeFallaEsperada: NotFound condicionAVerificar1: [:anError |customerBook numberOfCustomers = 1] condicionAVerificar2: [:anError | customerBook includesCustomerNamed: johnLennon]
 ! !
 
 !CustomerBookTest methodsFor: 'testing' stamp: 'NR 4/3/2019 10:50:25'!
@@ -229,39 +224,37 @@ test06RemovingASuspendedCustomerShouldRemoveItFromCustomerBook
 	
 ! !
 
-!CustomerBookTest methodsFor: 'testing' stamp: 'Ale 9/11/2025 17:32:49'!
+!CustomerBookTest methodsFor: 'testing' stamp: 'Ale 9/11/2025 18:07:55'!
 test07CanNotSuspendAnInvalidCustomer
 	
-	| customerBook johnLennon |
-			
-	customerBook := CustomerBook new.
-	johnLennon := 'John Lennon'.
-	customerBook addCustomerNamed: johnLennon.
-	self accionAVerificarFalla: [ customerBook suspendCustomerNamed: 'George Harrison'] tipoDeFallaEsperada: CantSuspend condicionAVerificar1: [customerBook numberOfCustomers = 1] condicionAVerificar2: [customerBook includesCustomerNamed: johnLennon].
-	! !
+	self verificarFallaSuspendiendoA: 'George Harrison'! !
 
-!CustomerBookTest methodsFor: 'testing' stamp: 'Ale 9/11/2025 17:28:45'!
+!CustomerBookTest methodsFor: 'testing' stamp: 'Ale 9/11/2025 18:07:17'!
 test08CanNotSuspendAnAlreadySuspendedCustomer
 	
-	| customerBook johnLennon |
-			
-	customerBook := CustomerBook new.
-	johnLennon := 'John Lennon'.
-	customerBook addCustomerNamed: johnLennon.
-	customerBook suspendCustomerNamed: johnLennon.
-	
-	self accionAVerificarFalla: [ customerBook suspendCustomerNamed: johnLennon] tipoDeFallaEsperada: CantSuspend condicionAVerificar1: [customerBook numberOfCustomers = 1] condicionAVerificar2: [customerBook includesCustomerNamed: johnLennon]
-	! !
+	self verificarFallaSuspendiendoA: 'John Lennon'.! !
 
 
-!CustomerBookTest methodsFor: 'testFallas' stamp: 'Ale 9/11/2025 17:19:21'!
+!CustomerBookTest methodsFor: 'testFallas' stamp: 'Ale 9/11/2025 18:13:43'!
 accionAVerificarFalla: accionAFallar tipoDeFallaEsperada: tipoFalla condicionAVerificar1: condicionAVerificar1 condicionAVerificar2:condicionAVerificar2
 	[ accionAFallar value.
 	self fail ]
 			on: tipoFalla 
 			do: [ :anError | 
 				self assert: (condicionAVerificar1 value:anError).
-				self assert: condicionAVerificar2 value ]! !
+				self assert: (condicionAVerificar2 value: anError) ]! !
+
+!CustomerBookTest methodsFor: 'testFallas' stamp: 'Ale 9/11/2025 18:14:21'!
+verificarFallaSuspendiendoA: clienteASuspender
+	|customerBook johnLennon|
+		
+	customerBook := CustomerBook new.
+	johnLennon := 'John Lennon'.
+	customerBook addCustomerNamed: johnLennon.
+	customerBook suspendCustomerNamed: johnLennon.
+	
+	self accionAVerificarFalla: [customerBook suspendCustomerNamed: clienteASuspender] tipoDeFallaEsperada: CantSuspend condicionAVerificar1: [:anError | customerBook numberOfCustomers = 1] condicionAVerificar2: [:anError | customerBook includesCustomerNamed: johnLennon]
+	! !
 
 
 !CustomerBookTest methodsFor: 'as yet unclassified' stamp: 'Ale 9/11/2025 17:29:51'!
