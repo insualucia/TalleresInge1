@@ -31,15 +31,21 @@ addCustomerNamed: aName
 	
 	active add: aName ! !
 
+!CustomerBook methodsFor: 'customer management' stamp: 'Ale 9/12/2025 11:48:29'!
+agregarYSuspenderCliente: nombreCliente
+
+	self addCustomerNamed: nombreCliente.
+	self suspendCustomerNamed: nombreCliente.! !
+
 !CustomerBook methodsFor: 'customer management' stamp: 'NR 4/3/2019 10:14:26'!
 numberOfActiveCustomers
 	
 	^active size! !
 
-!CustomerBook methodsFor: 'customer management' stamp: 'NR 4/3/2019 10:14:26'!
+!CustomerBook methodsFor: 'customer management' stamp: 'Ale 9/12/2025 11:32:38'!
 numberOfCustomers
 	
-	^active size + suspended size! !
+	^self numberOfActiveCustomers + self numberOfSuspendedCustomers ! !
 
 !CustomerBook methodsFor: 'customer management' stamp: 'NR 9/19/2018 17:36:09'!
 numberOfSuspendedCustomers
@@ -164,7 +170,7 @@ test04CanNotRemoveAnInvalidCustomer
 	
 	self accionAVerificarFalla: [ customerBook removeCustomerNamed: 'Paul McCartney'.] tipoDeFallaEsperada: NotFound condicionAVerificar1: [:anError |customerBook numberOfCustomers = 1] condicionAVerificar2: [:anError | customerBook includesCustomerNamed: johnLennon].! !
 
-!CustomerBookTest methodsFor: 'testing' stamp: 'Ale 9/11/2025 20:57:28'!
+!CustomerBookTest methodsFor: 'testing' stamp: 'Ale 9/12/2025 11:49:36'!
 test05SuspendingACustomerShouldNotRemoveItFromCustomerBook
 
 	| customerBook paulMcCartney|
@@ -172,13 +178,12 @@ test05SuspendingACustomerShouldNotRemoveItFromCustomerBook
 	customerBook := CustomerBook new.
 	paulMcCartney := 'Paul McCartney'.
 	
-	customerBook addCustomerNamed: paulMcCartney.
-	customerBook suspendCustomerNamed: paulMcCartney.
+	customerBook agregarYSuspenderCliente: paulMcCartney.
 	
 	self customerBookAVerificar: customerBook cantClientesActivosEsperados: 0 cantClientesSuspendidosEsperados: 1 cantClientesEsperados: 1 paulMcCartneyEsCliente: true.	
 ! !
 
-!CustomerBookTest methodsFor: 'testing' stamp: 'Ale 9/11/2025 20:57:36'!
+!CustomerBookTest methodsFor: 'testing' stamp: 'Ale 9/12/2025 11:50:07'!
 test06RemovingASuspendedCustomerShouldRemoveItFromCustomerBook
 
 	| customerBook paulMcCartney|
@@ -186,8 +191,7 @@ test06RemovingASuspendedCustomerShouldRemoveItFromCustomerBook
 	customerBook := CustomerBook new.
 	paulMcCartney := 'Paul McCartney'.
 	
-	customerBook addCustomerNamed: paulMcCartney.
-	customerBook suspendCustomerNamed: paulMcCartney.
+	customerBook  agregarYSuspenderCliente: paulMcCartney.
 	customerBook removeCustomerNamed: paulMcCartney.
 	
 	self customerBookAVerificar: customerBook cantClientesActivosEsperados:0 cantClientesSuspendidosEsperados:0 cantClientesEsperados:0 paulMcCartneyEsCliente:false.
@@ -214,14 +218,13 @@ accionAVerificarFalla: accionAFallar tipoDeFallaEsperada: tipoFalla condicionAVe
 				self assert: (condicionAVerificar1 value:anError).
 				self assert: (condicionAVerificar2 value:anError)].! !
 
-!CustomerBookTest methodsFor: 'assertsCasosErrores' stamp: 'Ale 9/11/2025 18:14:21'!
+!CustomerBookTest methodsFor: 'assertsCasosErrores' stamp: 'Ale 9/12/2025 11:46:55'!
 verificarFallaSuspendiendoA: clienteASuspender
 	|customerBook johnLennon|
 		
 	customerBook := CustomerBook new.
 	johnLennon := 'John Lennon'.
-	customerBook addCustomerNamed: johnLennon.
-	customerBook suspendCustomerNamed: johnLennon.
+	customerBook agregarYSuspenderCliente: johnLennon.
 	
 	self accionAVerificarFalla: [customerBook suspendCustomerNamed: clienteASuspender] tipoDeFallaEsperada: CantSuspend condicionAVerificar1: [:anError | customerBook numberOfCustomers = 1] condicionAVerificar2: [:anError | customerBook includesCustomerNamed: johnLennon]
 	! !
