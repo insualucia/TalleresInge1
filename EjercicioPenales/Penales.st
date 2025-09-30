@@ -94,25 +94,38 @@ obtenerPosicion
 	^ posicion.! !
 
 
-!Arquero methodsFor: 'evaluating' stamp: 'Lu 9/27/2025 21:09:43'!
-cambiarAltura: unaAltura
+!Arquero methodsFor: 'evaluating' stamp: 'Lu 9/29/2025 21:52:51'!
+cambiarPosicionA: unaSubclaseDePosicionPenales.
 
-	posicion := posicion x @ unaAltura.! !
+	posicion := unaSubclaseDePosicionPenales crearPosicionPenales: posicion obtenerPoint.! !
 
-!Arquero methodsFor: 'evaluating' stamp: 'Lu 9/27/2025 21:06:44'!
-lanzarseHaciaPelotaJabulani: unaPelotaJabulani
+!Arquero methodsFor: 'evaluating' stamp: 'Lu 9/29/2025 20:14:59'!
+lanzarseHacia: unaPosicionALanzarse paraAtajarTiro: unTiroAlArco con: unaPelota.
 	
-	lanzamiento recibirPelotaJabulani: unaPelotaJabulani.! !
-
-!Arquero methodsFor: 'evaluating' stamp: 'Lu 9/27/2025 21:29:11'!
-lanzarseHaciaPelotaPlayera: unaPelotaPlayera
+	posicion := unaPosicionALanzarse .
 	
-	lanzamiento recibirPelotaPlayera: unaPelotaPlayera.! !
+	unTiroAlArco conPelota: unaPelota paraArquero: self.
+	! !
 
-!Arquero methodsFor: 'evaluating' stamp: 'Lu 9/27/2025 21:12:02'!
-seLanzaEnPosicion: unaPosicion.
+!Arquero methodsFor: 'evaluating' stamp: 'Lu 9/29/2025 20:25:19'!
+lanzarseHaciaPelotaJabulaniAColocar
+	
+	lanzamiento recibirPelotaJabulaniAColocar: self.! !
 
-	posicion := unaPosicion.! !
+!Arquero methodsFor: 'evaluating' stamp: 'Lu 9/29/2025 20:25:03'!
+lanzarseHaciaPelotaJabulaniAMatar
+	
+	lanzamiento recibirPelotaJabulaniAMatar: self.! !
+
+!Arquero methodsFor: 'evaluating' stamp: 'Lu 9/29/2025 20:26:55'!
+lanzarseHaciaPelotaPlayeraAColocar
+	
+	lanzamiento recibirPelotaPlayeraAColocar: self.! !
+
+!Arquero methodsFor: 'evaluating' stamp: 'Lu 9/29/2025 20:26:37'!
+lanzarseHaciaPelotaPlayeraAMatar
+	
+	lanzamiento recibirPelotaPlayeraAMatar: self.! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -146,13 +159,16 @@ inicializarConFuerza: unaCantidadDeFuerza yTiro: unTipoTiro
 	tiro asignarDelantero: self.! !
 
 
-!Delantero methodsFor: 'evaluating' stamp: 'Lu 9/27/2025 21:14:36'!
-patearPelota: unaPelota paraArquero: unArquero hacia: unaPosicion
+!Delantero methodsFor: 'evaluating' stamp: 'Lu 9/29/2025 19:18:59'!
+patearPelota: unaPelota hacia: unaPosicion
 	
-	unaPelota moverHacia: unaPosicion.
+	^tiro tiroDeDelantero: self pateaPelota: unaPelota hacia: unaPosicion.! !
 
-	tiro impactarConPelota: unaPelota haciaArquero: unArquero.! !
 
+!Delantero methodsFor: 'accessing' stamp: 'Lu 9/29/2025 19:07:24'!
+obtenerTiro
+
+	^tiro.! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -160,10 +176,10 @@ patearPelota: unaPelota paraArquero: unArquero hacia: unaPosicion
 Delantero class
 	instanceVariableNames: ''!
 
-!Delantero class methodsFor: 'instance creation' stamp: 'Lu 9/27/2025 19:24:23'!
+!Delantero class methodsFor: 'instance creation' stamp: 'Lu 9/29/2025 20:42:26'!
 decideTirarAColocarSuFuerzaBaseEs: unaCantidadDeFuerza
 
-	^self new inicializarConFuerza: unaCantidadDeFuerza / 2 yTiro: TiroAColocar new.! !
+	^self new inicializarConFuerza: unaCantidadDeFuerza yTiro: TiroAColocar new.! !
 
 !Delantero class methodsFor: 'instance creation' stamp: 'Lu 9/27/2025 19:24:49'!
 decideTirarAMatarSuFuerzaBaseEs: unaCantidadDeFuerza
@@ -173,25 +189,31 @@ decideTirarAMatarSuFuerzaBaseEs: unaCantidadDeFuerza
 
 !classDefinition: #LanzamientoArquero category: #Penales!
 Object subclass: #LanzamientoArquero
-	instanceVariableNames: 'arquero'
+	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Penales'!
 
-!LanzamientoArquero methodsFor: 'evaluating' stamp: 'Lu 9/27/2025 21:04:33'!
+!LanzamientoArquero methodsFor: 'evaluating' stamp: 'Lu 9/29/2025 20:31:57'!
 asignarArquero: unArquero
 
-	arquero := unArquero.! !
+	"arquero := unArquero."! !
 
-!LanzamientoArquero methodsFor: 'evaluating' stamp: 'Lu 9/27/2025 21:32:49'!
-recibirPelotaJabulani: unaPelotaJabulani
+!LanzamientoArquero methodsFor: 'evaluating' stamp: 'Lu 9/29/2025 20:31:33'!
+recibirPelotaJabulaniAColocar: unArquero
 
-	self subclassResponsibility! !
+	! !
 
-!LanzamientoArquero methodsFor: 'evaluating' stamp: 'Lu 9/27/2025 21:32:43'!
-recibirPelotaPlayera: unaPelotaPlayera
+!LanzamientoArquero methodsFor: 'evaluating' stamp: 'Lu 9/29/2025 20:30:29'!
+recibirPelotaJabulaniAMatar: unArquero! !
 
-	self subclassResponsibility! !
+!LanzamientoArquero methodsFor: 'evaluating' stamp: 'Lu 9/29/2025 20:31:38'!
+recibirPelotaPlayeraAColocar: unArquero
+
+	! !
+
+!LanzamientoArquero methodsFor: 'evaluating' stamp: 'Lu 9/29/2025 20:31:02'!
+recibirPelotaPlayeraAMatar: unArquero! !
 
 
 !classDefinition: #ElegirAntes category: #Penales!
@@ -201,15 +223,25 @@ LanzamientoArquero subclass: #ElegirAntes
 	poolDictionaries: ''
 	category: 'Penales'!
 
-!ElegirAntes methodsFor: 'evaluating' stamp: 'Lu 9/27/2025 22:10:07'!
-recibirPelotaJabulani: unaPelotaJabulani
+!ElegirAntes methodsFor: 'evaluating' stamp: 'Lu 9/29/2025 20:28:48'!
+recibirPelotaJabulaniAColocar: unArquero
 
-	arquero aumentarFuerza50.! !
+	unArquero aumentarFuerza50.! !
 
-!ElegirAntes methodsFor: 'evaluating' stamp: 'Lu 9/27/2025 21:35:02'!
-recibirPelotaPlayera: unaPelotaPlayera
+!ElegirAntes methodsFor: 'evaluating' stamp: 'Lu 9/29/2025 21:25:26'!
+recibirPelotaJabulaniAMatar: unArquero
 
-	arquero aumentarFuerza100.! !
+	unArquero cambiarPosicionA: SoloAncho.! !
+
+!ElegirAntes methodsFor: 'evaluating' stamp: 'Lu 9/29/2025 20:29:31'!
+recibirPelotaPlayeraAColocar: unArquero
+
+	unArquero aumentarFuerza100.! !
+
+!ElegirAntes methodsFor: 'evaluating' stamp: 'Lu 9/29/2025 21:27:30'!
+recibirPelotaPlayeraAMatar: unArquero
+
+	unArquero cambiarPosicionA: SoloAlto.! !
 
 
 !classDefinition: #EsperarYAdelantarse category: #Penales!
@@ -219,39 +251,40 @@ LanzamientoArquero subclass: #EsperarYAdelantarse
 	poolDictionaries: ''
 	category: 'Penales'!
 
-!EsperarYAdelantarse methodsFor: 'evaluating' stamp: 'Lu 9/27/2025 21:10:42'!
-recibirPelotaJabulani: unaPelotaJabulani
+!EsperarYAdelantarse methodsFor: 'evaluating' stamp: 'Lu 9/29/2025 21:29:15'!
+recibirPelotaJabulaniAColocar: unArquero
 
-	arquero cambiarAltura: unaPelotaJabulani obtenerPosicion y.
-	arquero aumentarFuerza50.! !
-
-!EsperarYAdelantarse methodsFor: 'evaluating' stamp: 'Lu 9/27/2025 21:38:48'!
-recibirPelotaPlayera: unaPelotaPlayera
-
-	arquero perderPartido .! !
+	unArquero cambiarPosicionA: SoloAncho.! !
 
 
 !classDefinition: #Pelota category: #Penales!
 Object subclass: #Pelota
-	instanceVariableNames: 'posicion'
+	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Penales'!
 
 
-!Pelota methodsFor: 'evaluating' stamp: 'Lu 9/27/2025 21:41:31'!
-cambiarAltura: unaAltura
+!Pelota methodsFor: 'evaluating' stamp: 'Lu 9/29/2025 19:20:06'!
+recibirPatadaAColocarDe: unDelantero hacia: unaPelota
 
-	posicion := posicion x @ unaAltura.! !
+	self subclassResponsibility! !
 
-!Pelota methodsFor: 'evaluating' stamp: 'Lu 9/27/2025 21:18:21'!
-moverHacia: unaPosicion
-	posicion := unaPosicion .! !
+!Pelota methodsFor: 'evaluating' stamp: 'Lu 9/29/2025 20:22:02'!
+recibirPatadaAColocarPara: unArquero
 
+	self subclassResponsibility! !
 
-!Pelota methodsFor: 'accessing' stamp: 'Lu 9/27/2025 15:32:15'!
-obtenerPosicion
-	^ posicion.! !
+!Pelota methodsFor: 'evaluating' stamp: 'Lu 9/29/2025 20:22:22'!
+recibirPatadaAMatarDe: unDelantero hacia: unaPosicion
+
+	self subclassResponsibility! !
+
+!Pelota methodsFor: 'evaluating' stamp: 'Lu 9/29/2025 20:22:09'!
+recibirPatadaAMatarPara: unArquero
+
+	self subclassResponsibility! !
+
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -277,18 +310,27 @@ Pelota subclass: #Jabulani
 	poolDictionaries: ''
 	category: 'Penales'!
 
-!Jabulani methodsFor: 'evaluating' stamp: 'Lu 9/27/2025 21:14:14'!
-avanzarHaciaArquero: unArquero
+!Jabulani methodsFor: 'evaluating' stamp: 'Lu 9/29/2025 19:20:28'!
+recibirPatadaAColocarDe: unDelantero hacia: unaPosicion
 
-	unArquero lanzarseHaciaPelotaJabulani: self.! !
+	^ unaPosicion.! !
 
-!Jabulani methodsFor: 'evaluating' stamp: 'Lu 9/27/2025 22:12:25'!
-recibirPatadaAColocarDe: unDelantero! !
+!Jabulani methodsFor: 'evaluating' stamp: 'Lu 9/29/2025 20:20:40'!
+recibirPatadaAColocarPara: unArquero
 
-!Jabulani methodsFor: 'evaluating' stamp: 'Lu 9/27/2025 22:04:49'!
-recibirPatadaAMatarDe: unDelantero
+	unArquero lanzarseHaciaPelotaJabulaniAColocar. ! !
 
-	unDelantero aumentarFuerza20.! !
+!Jabulani methodsFor: 'evaluating' stamp: 'Lu 9/29/2025 19:29:43'!
+recibirPatadaAMatarDe: unDelantero hacia: unaPosicion
+
+	unDelantero aumentarFuerza20.
+	
+	^unaPosicion.! !
+
+!Jabulani methodsFor: 'evaluating' stamp: 'Lu 9/29/2025 20:20:59'!
+recibirPatadaAMatarPara: unArquero
+
+	unArquero lanzarseHaciaPelotaJabulaniAMatar. ! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -309,19 +351,28 @@ Pelota subclass: #Playera
 	poolDictionaries: ''
 	category: 'Penales'!
 
-!Playera methodsFor: 'evaluating' stamp: 'Lu 9/27/2025 21:29:37'!
-avanzarHaciaArquero: unArquero
+!Playera methodsFor: 'evaluating' stamp: 'Lu 9/29/2025 19:21:03'!
+recibirPatadaAColocarDe: unDelantero hacia: unaPosicion
 
-	unArquero lanzarseHaciaPelotaPlayera: self.! !
+	unDelantero disminuirFuerza20.
+	
+	^unaPosicion.! !
 
-!Playera methodsFor: 'evaluating' stamp: 'Lu 9/27/2025 22:07:38'!
-recibirPatadaAColocarDe: unDelantero
+!Playera methodsFor: 'evaluating' stamp: 'Lu 9/29/2025 20:21:49'!
+recibirPatadaAColocarPara: unArquero
 
-	unDelantero disminuirFuerza20.! !
+	unArquero lanzarseHaciaPelotaPlayeraAColocar. ! !
 
-!Playera methodsFor: 'evaluating' stamp: 'Lu 9/27/2025 22:03:10'!
-recibirPatadaAMatarDe: unDelantero
-! !
+!Playera methodsFor: 'evaluating' stamp: 'Lu 9/29/2025 21:18:32'!
+recibirPatadaAMatarDe: unDelantero hacia: unaPosicion
+	
+	^ PosicionPenales crearPosicionPenales: (unaPosicion x @ (unaPosicion y + 2)).
+	! !
+
+!Playera methodsFor: 'evaluating' stamp: 'Lu 9/29/2025 20:21:38'!
+recibirPatadaAMatarPara: unArquero
+
+	unArquero lanzarseHaciaPelotaPlayeraAMatar. ! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -342,30 +393,47 @@ Object subclass: #Penales
 	poolDictionaries: ''
 	category: 'Penales'!
 
-!Penales methodsFor: 'initialization' stamp: 'Lu 9/27/2025 12:08:28'!
+!Penales methodsFor: 'initialization' stamp: 'Lu 9/29/2025 17:55:20'!
 inicializarConDelantero: unDelantero yArquero: unArquero
 
 	delantero := unDelantero.
 	arquero := unArquero.! !
 
 
-!Penales methodsFor: 'evaluating' stamp: 'Lu 9/27/2025 21:16:40'!
+!Penales methodsFor: 'evaluating' stamp: 'Lu 9/29/2025 21:45:13'!
 arbitroPitaConPelota: unaPelota delanteroRemataAlArcoConDireccion: unaPosicionARematar arqueroSeLanzaEnDirección: unaPosicionALanzarse
+
+|posicionRematar posicionLanzarse|
 
 	self esPosicionDeArco: unaPosicionARematar conError: self class direccionTiroFueraDeRango .
 	self esPosicionDeArco: unaPosicionALanzarse conError: self class direccionArqueroFueraDeRango .
 	
+	posicionRematar  := PosicionPenales crearPosicionPenales: unaPosicionARematar.
+	posicionLanzarse := PosicionPenales crearPosicionPenales: unaPosicionALanzarse.
+	
 	pelota := unaPelota.
 	
-	arquero seLanzaEnPosicion: unaPosicionALanzarse.
+	posicionRemate := delantero patearPelota: unaPelota hacia: posicionRematar .
 	
-	delantero patearPelota: pelota paraArquero: arquero hacia: unaPosicionARematar.
+	arquero lanzarseHacia: posicionLanzarse paraAtajarTiro: (delantero obtenerTiro) con: unaPelota.
 	
-	((arquero obtenerPosicion x !!= pelota obtenerPosicion x ) or: (arquero obtenerPosicion y !!= pelota obtenerPosicion y))ifTrue: [^delantero sumarPunto].
+	self calcularGanador.
+	! !
+
+!Penales methodsFor: 'evaluating' stamp: 'Lu 9/29/2025 22:03:04'!
+calcularGanador
+
+	(posicionRemate isMemberOf: FueraArco)ifTrue: [^ arquero sumarPunto ].
 	
-	(delantero obtenerFuerza > arquero obtenerFuerza )ifTrue: [^delantero sumarPunto].
+	"si arquero espera y pelota playera y tiro a matar : gana"
 	
-	^arquero sumarPunto.
+      "si arquero espera y pelota playera y tiro a colocar : pierde"
+
+	"si arquero espera y pelota jabulani y tiro a matar : pierde"
+	
+	(arquero obtenerPosicion = posicionRemate and: [arquero obtenerFuerza  >= delantero obtenerFuerza]) ifTrue: [^arquero sumarPunto].
+	
+	^ delantero sumarPunto . 
 	! !
 
 
@@ -379,10 +447,10 @@ puntajeDeDelantero
 
 	^delantero obtenerPuntaje .! !
 
-!Penales methodsFor: 'accessing' stamp: 'Lu 9/27/2025 15:32:36'!
+!Penales methodsFor: 'accessing' stamp: 'Lu 9/29/2025 21:47:42'!
 varDireccionRemateResultante
 
-	^pelota obtenerPosicion .! !
+	^posicionRemate obtenerPoint.! !
 
 !Penales methodsFor: 'accessing' stamp: 'Lu 9/27/2025 19:30:33'!
 varFuerzaResultanteDeAtajada
@@ -395,10 +463,10 @@ varFuerzaResultanteDeTiro
 	^delantero obtenerFuerza ! !
 
 
-!Penales methodsFor: 'validation' stamp: 'Lu 9/27/2025 15:13:33'!
+!Penales methodsFor: 'validation' stamp: 'Lu 9/29/2025 18:21:25'!
 esPosicionDeArco: unaPosicion conError: unError
 
-((unaPosicion x < 0) or: (((unaPosicion y < 0) or: unaPosicion x > 2) or: (unaPosicion y > 2))) ifTrue:[self error: unError.].! !
+	(unaPosicion between: 0@0 and: 2@2) ifFalse:[self error: unError.].! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -423,6 +491,115 @@ conDelantero: unDelantero yArquero: unArquero
 	^ self new inicializarConDelantero: unDelantero yArquero: unArquero.! !
 
 
+!classDefinition: #PosicionPenales category: #Penales!
+Object subclass: #PosicionPenales
+	instanceVariableNames: 'value'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Penales'!
+
+!PosicionPenales methodsFor: 'initialization' stamp: 'Lu 9/29/2025 21:04:55'!
+inicializarPosicion: unPoint
+
+	value := unPoint.! !
+
+
+!PosicionPenales methodsFor: 'accessing' stamp: 'Lu 9/29/2025 21:09:35'!
+obtenerPoint 
+
+	^value.! !
+
+!PosicionPenales methodsFor: 'accessing' stamp: 'Lu 9/29/2025 21:16:05'!
+x
+	^value x.! !
+
+!PosicionPenales methodsFor: 'accessing' stamp: 'Lu 9/29/2025 21:16:10'!
+y
+	^value y.! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'PosicionPenales class' category: #Penales!
+PosicionPenales class
+	instanceVariableNames: ''!
+
+!PosicionPenales class methodsFor: 'instance creation' stamp: 'Lu 9/29/2025 21:03:07'!
+crearPosicionPenales: unPoint
+
+(unPoint between: 0@0 and: 2@2)ifTrue: [^DentroArco new inicializarPosicion: unPoint].
+
+	^FueraArco new inicializarPosicion: unPoint.! !
+
+
+!classDefinition: #DentroArco category: #Penales!
+PosicionPenales subclass: #DentroArco
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Penales'!
+
+!DentroArco methodsFor: 'comparing' stamp: 'Lu 9/29/2025 21:11:49'!
+= unaPosicion
+
+	^ value = unaPosicion obtenerPoint.! !
+
+
+!classDefinition: #FueraArco category: #Penales!
+PosicionPenales subclass: #FueraArco
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Penales'!
+
+
+!classDefinition: #SoloAlto category: #Penales!
+PosicionPenales subclass: #SoloAlto
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Penales'!
+
+!SoloAlto methodsFor: 'comparing' stamp: 'Lu 9/29/2025 21:16:48'!
+= unaPosicion
+
+	^ value y = unaPosicion y.! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'SoloAlto class' category: #Penales!
+SoloAlto class
+	instanceVariableNames: ''!
+
+!SoloAlto class methodsFor: 'instance creation' stamp: 'Lu 9/29/2025 21:24:06'!
+crearPosicionPenales: unPoint
+
+	^self new inicializarPosicion: unPoint.! !
+
+
+!classDefinition: #SoloAncho category: #Penales!
+PosicionPenales subclass: #SoloAncho
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Penales'!
+
+!SoloAncho methodsFor: 'comparing' stamp: 'Lu 9/29/2025 21:16:54'!
+= unaPosicion
+
+	^ value x  = unaPosicion x.! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'SoloAncho class' category: #Penales!
+SoloAncho class
+	instanceVariableNames: ''!
+
+!SoloAncho class methodsFor: 'instance creation' stamp: 'Lu 9/29/2025 21:24:19'!
+crearPosicionPenales: unPoint
+
+	^self new inicializarPosicion: unPoint.! !
+
+
 !classDefinition: #TiroAlArco category: #Penales!
 Object subclass: #TiroAlArco
 	instanceVariableNames: 'posicion delantero'
@@ -435,15 +612,15 @@ asignarDelantero: unDelantero
 
 	delantero := unDelantero .! !
 
-!TiroAlArco methodsFor: 'evaluating' stamp: 'Lu 9/27/2025 21:30:49'!
-recibirPelotaJabulani: unaPelota
+!TiroAlArco methodsFor: 'evaluating' stamp: 'Lu 9/29/2025 20:18:49'!
+conPelota: unaPelota paraArquero: unArquero
 
-	self subclassResponsibility ! !
+	self subclassResponsibility! !
 
-!TiroAlArco methodsFor: 'evaluating' stamp: 'Lu 9/27/2025 21:30:42'!
-recibirPelotaPlayera: unaPelota
+!TiroAlArco methodsFor: 'evaluating' stamp: 'Lu 9/29/2025 20:23:33'!
+tiroDeDelantero: unDelantero pateaPelota: unaPelota hacia: unaPosicion
 
-	self subclassResponsibility ! !
+	self subclassResponsibility! !
 
 
 !classDefinition: #TiroAColocar category: #Penales!
@@ -453,10 +630,17 @@ TiroAlArco subclass: #TiroAColocar
 	poolDictionaries: ''
 	category: 'Penales'!
 
-!TiroAColocar methodsFor: 'evaluating' stamp: 'Lu 9/27/2025 22:02:20'!
-impactarConPelota: unaPelota haciaArquero: unArquero
-	unaPelota recibirPatadaAColocarDe: delantero.
-	unaPelota avanzarHaciaArquero: unArquero. ! !
+!TiroAColocar methodsFor: 'evaluating' stamp: 'Lu 9/29/2025 20:18:04'!
+conPelota: unaPelota paraArquero: unArquero
+
+	unaPelota recibirPatadaAColocarPara: unArquero. ! !
+
+!TiroAColocar methodsFor: 'evaluating' stamp: 'Lu 9/29/2025 19:19:38'!
+tiroDeDelantero: unDelantero pateaPelota: unaPelota hacia: unaPosicion
+
+	unDelantero disminuirFuerza50.
+	
+	^ unaPelota recibirPatadaAColocarDe: unDelantero hacia: unaPosicion.! !
 
 
 !classDefinition: #TiroAMatar category: #Penales!
@@ -466,12 +650,21 @@ TiroAlArco subclass: #TiroAMatar
 	poolDictionaries: ''
 	category: 'Penales'!
 
-!TiroAMatar methodsFor: 'evaluating' stamp: 'Lu 9/27/2025 22:02:05'!
-impactarConPelota: unaPelota haciaArquero: unArquero
+!TiroAMatar methodsFor: 'evaluating' stamp: 'Lu 9/29/2025 20:18:41'!
+conPelota: unaPelota paraArquero: unArquero
+
+	unaPelota recibirPatadaAMatarPara: unArquero.! !
+
+!TiroAMatar methodsFor: 'evaluating' stamp: 'Lu 9/29/2025 21:19:47'!
+tiroDeDelantero: unDelantero pateaPelota: unaPelota hacia: unaPosicion
 	
-	unaPelota recibirPatadaAMatarDe: delantero.
-	unaPelota cambiarAltura: 1.
-	unaPelota avanzarHaciaArquero: unArquero. ! !
+	 | posicionRemate |
+	
+	posicionRemate := unaPelota recibirPatadaAMatarDe: unDelantero hacia: unaPosicion.
+	
+	((unaPosicion x !!= 1) and: (unaPosicion y !!= 1))ifTrue: [^PosicionPenales crearPosicionPenales:  (unaPosicion x @ 1)].
+	
+	^ posicionRemate.! !
 
 
 !classDefinition: #PenalesTest category: #Penales!
