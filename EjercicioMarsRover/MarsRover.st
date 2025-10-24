@@ -70,11 +70,11 @@ procesarInstruccion: unaInstruccion
 	unaInstruccion = $l ifTrue:[^direccion := direccion rotarAIzquierda].
 	direccion := direccion rotarADerecha .! !
 
-!MarsRover methodsFor: 'procesamiento' stamp: 'AC 10/23/2025 09:50:41'!
+!MarsRover methodsFor: 'procesamiento' stamp: 'AC 10/24/2025 12:11:54'!
 process: stringDeInstrucciones 
 	stringDeInstrucciones do:
 		[:unaInstruccion | 
-			(self esInstruccionValida: unaInstruccion) ifFalse: [^self].
+			(self esInstruccionValida: unaInstruccion) ifFalse: [^self error: self class errorMessageComandoInvalido].
 			self procesarInstruccion: unaInstruccion.
 		].
 ! !
@@ -97,6 +97,10 @@ at: unaPosicion heading: unaDireccion
 	puntoCardinal isNil ifTrue: [self error: self errorMessageDireccionNoEsUnPuntoCardinal].
 	^self new initializeAt: unaPosicion heading: puntoCardinal.! !
 
+
+!MarsRover class methodsFor: 'errores' stamp: 'AC 10/24/2025 12:13:10'!
+errorMessageComandoInvalido
+	^'Comando invalido. Comandos validos: f , b , l , r'! !
 
 !MarsRover class methodsFor: 'errores' stamp: 'AC 10/21/2025 13:08:17'!
 errorMessageDireccionNoEsUnPuntoCardinal
@@ -518,28 +522,38 @@ test19StringCombinadoDeMovimientosYRotacionesLlegaAPosicionYPuntoCardinalCorrect
 	self assert:  (rover isAt: -1@4 heading: #South).
 	! !
 
-!MarsRoverTest methodsFor: 'tests' stamp: 'AC 10/24/2025 11:36:21'!
-test20StringUnComandoErroneoNoModificaPosicionNiDireccion
+!MarsRoverTest methodsFor: 'tests' stamp: 'AC 10/24/2025 12:09:18'!
+test20StringUnComandoErroneoDevuelveErrorNoModificaPosicionNiDireccion
 	| rover |
 	rover := MarsRover at: 0@0 heading: #North.
 	
 	self assert:  (rover isAt: 0@0 heading: #North).
 	
-	rover process: 'm'.
+	self 
+		should: [rover process: 'm'.] 
+		raise: Error
+		withExceptionDo: [ :error |
+			self assert: MarsRover errorMessageComandoInvalido equals: error messageText.
+			self assert:  (rover isAt: 0@0 heading: #North)].
+
 	
-	self assert:  (rover isAt: 0@0 heading: #North).
 	! !
 
-!MarsRoverTest methodsFor: 'tests' stamp: 'AC 10/24/2025 11:36:43'!
-test21StringCombinadoCamandosValidosEInvalidosDejaDeProcesarAlPrimerComandoInvalido
+!MarsRoverTest methodsFor: 'tests' stamp: 'AC 10/24/2025 12:10:17'!
+test21StringCombinadoCamandosValidosEInvalidosDejaDeProcesarAlPrimerComandoInvalidoDevolviendoError
 	| rover |
 	rover := MarsRover at: 0@0 heading: #North.
 	
 	self assert:  (rover isAt: 0@0 heading: #North).
 	
-	rover process: 'ffrrrblfFllbcbr'.
+	self 
+	should: [rover process: 'ffrrrblfFllbcbr'.] 
+	raise: Error
+	withExceptionDo: [ :error |
+		self assert: MarsRover errorMessageComandoInvalido equals: error messageText.
+		self assert:  (rover isAt: 1@1 heading: #South).].
 	
-	self assert:  (rover isAt: 1@1 heading: #South).
+	
 	! !
 
 !MarsRoverTest methodsFor: 'tests' stamp: 'AC 10/24/2025 11:36:54'!
