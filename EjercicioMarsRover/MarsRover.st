@@ -1,4 +1,4 @@
-!classDefinition: #MarsRover category: 'MarsRover'!
+!classDefinition: #MarsRover category: #MarsRover!
 Object subclass: #MarsRover
 	instanceVariableNames: 'posicion direccion'
 	classVariableNames: ''
@@ -9,9 +9,9 @@ Object subclass: #MarsRover
 esInstruccionValida: unaPotencialInstruccion
 	^unaPotencialInstruccion  = $f or:[unaPotencialInstruccion = $b or:[unaPotencialInstruccion = $r or:[unaPotencialInstruccion = $l]]]! !
 
-!MarsRover methodsFor: 'checking' stamp: 'AC 10/23/2025 10:16:30'!
-heading: unPuntoCardinal
-	^ self direccion = unPuntoCardinal! !
+!MarsRover methodsFor: 'checking' stamp: 'AC 10/24/2025 11:38:22'!
+heading: unaDireccion
+	^ self direccion = unaDireccion! !
 
 !MarsRover methodsFor: 'checking' stamp: 'AC 10/23/2025 10:09:51'!
 isAt: unaPosicion
@@ -22,9 +22,9 @@ isAt: unaPosicion heading: unPuntoCardinal
 	^ (self isAt: unaPosicion) and:[self heading: unPuntoCardinal].! !
 
 
-!MarsRover methodsFor: 'acceder' stamp: 'AC 10/23/2025 10:16:45'!
+!MarsRover methodsFor: 'acceder' stamp: 'AC 10/24/2025 11:28:31'!
 direccion
-	^direccion class! !
+	^direccion etiqueta! !
 
 !MarsRover methodsFor: 'acceder' stamp: 'lu 10/17/2025 18:26:31'!
 posicion
@@ -81,16 +81,21 @@ process: stringDeInstrucciones
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'MarsRover class' category: 'MarsRover'!
+!classDefinition: 'MarsRover class' category: #MarsRover!
 MarsRover class
 	instanceVariableNames: ''!
 
-!MarsRover class methodsFor: 'instance creation' stamp: 'AC 10/23/2025 10:00:01'!
-at: unaPosicion heading: unPuntoCardinal
+!MarsRover class methodsFor: 'instance creation' stamp: 'AC 10/24/2025 11:27:20'!
+at: unaPosicion heading: unaDireccion
+	|puntoCardinal|
+
 	(unaPosicion isKindOf: Point) ifFalse: [self error: self errorMessagePosicionNoEsUnPoint].
-	(unPuntoCardinal isKindOf: PuntoCardinal) ifFalse: [self error: self errorMessageDireccionNoEsUnPuntoCardinal].
-	self initialize.
-	^self new initializeAt: unaPosicion heading: unPuntoCardinal .! !
+	unaDireccion = #North ifTrue:[puntoCardinal := Norte new].
+	unaDireccion = #South ifTrue:[puntoCardinal := Sur new].
+	unaDireccion = #East ifTrue:[puntoCardinal := Este new].
+	unaDireccion = #West ifTrue: [puntoCardinal := Oeste new].
+	puntoCardinal isNil ifTrue: [self error: self errorMessageDireccionNoEsUnPuntoCardinal].
+	^self new initializeAt: unaPosicion heading: puntoCardinal.! !
 
 
 !MarsRover class methodsFor: 'errores' stamp: 'AC 10/21/2025 13:08:17'!
@@ -102,7 +107,7 @@ errorMessagePosicionNoEsUnPoint
 	^'La posicion debe ser un Point'! !
 
 
-!classDefinition: #PuntoCardinal category: 'MarsRover'!
+!classDefinition: #PuntoCardinal category: #MarsRover!
 Object subclass: #PuntoCardinal
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -130,8 +135,14 @@ moverHaciaAtras: unRover
 
 	self subclassResponsibility! !
 
+
+!PuntoCardinal methodsFor: 'acceder' stamp: 'AC 10/24/2025 11:29:07'!
+etiqueta
+
+	self subclassResponsibility! !
+
 
-!classDefinition: #Este category: 'MarsRover'!
+!classDefinition: #Este category: #MarsRover!
 PuntoCardinal subclass: #Este
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -159,8 +170,13 @@ moverHaciaAtras: unRover
 
 	unRover moverHaciaOeste .! !
 
+
+!Este methodsFor: 'acceder' stamp: 'AC 10/24/2025 11:29:18'!
+etiqueta
+	^#East! !
+
 
-!classDefinition: #Norte category: 'MarsRover'!
+!classDefinition: #Norte category: #MarsRover!
 PuntoCardinal subclass: #Norte
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -188,8 +204,13 @@ moverHaciaAtras: unRover
 
 	unRover moverHaciaSur .! !
 
+
+!Norte methodsFor: 'acceder' stamp: 'AC 10/24/2025 11:29:28'!
+etiqueta
+	^#North! !
+
 
-!classDefinition: #Oeste category: 'MarsRover'!
+!classDefinition: #Oeste category: #MarsRover!
 PuntoCardinal subclass: #Oeste
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -217,8 +238,13 @@ moverHaciaAtras: unRover
 
 	unRover moverHaciaEste .! !
 
+
+!Oeste methodsFor: 'acceder' stamp: 'AC 10/24/2025 11:29:36'!
+etiqueta
+	^#West! !
+
 
-!classDefinition: #Sur category: 'MarsRover'!
+!classDefinition: #Sur category: #MarsRover!
 PuntoCardinal subclass: #Sur
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -246,18 +272,23 @@ moverHaciaAtras: unRover
 
 	unRover moverHaciaNorte .! !
 
+
+!Sur methodsFor: 'acceder' stamp: 'AC 10/24/2025 11:29:46'!
+etiqueta
+	^#South! !
+
 
-!classDefinition: #MarsRoverTest category: 'MarsRover'!
+!classDefinition: #MarsRoverTest category: #MarsRover!
 TestCase subclass: #MarsRoverTest
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'MarsRover'!
 
-!MarsRoverTest methodsFor: 'tests' stamp: 'AC 10/23/2025 10:11:28'!
+!MarsRoverTest methodsFor: 'tests' stamp: 'AC 10/24/2025 11:29:56'!
 test01StringVacioNoCambiaPosicion
 	| rover |
-	rover := MarsRover at: 0@0 heading: Norte new.
+	rover := MarsRover at: 0@0 heading: #North.
 	
 	self assert:  (rover isAt: 0@0).
 	
@@ -266,10 +297,10 @@ test01StringVacioNoCambiaPosicion
 	self assert:  (rover isAt: 0@0).
 	! !
 
-!MarsRoverTest methodsFor: 'tests' stamp: 'AC 10/23/2025 10:12:08'!
+!MarsRoverTest methodsFor: 'tests' stamp: 'AC 10/24/2025 11:30:08'!
 test02StringUnafMueveHaciaAdelante
 	| rover |
-	rover := MarsRover at: 0@0 heading: Norte new.
+	rover := MarsRover at: 0@0 heading: #North.
 	
 	self assert:  (rover isAt: 0@0).
 	
@@ -278,10 +309,10 @@ test02StringUnafMueveHaciaAdelante
 	self assert:  (rover isAt: 0@1).
 	! !
 
-!MarsRoverTest methodsFor: 'tests' stamp: 'AC 10/23/2025 10:12:27'!
+!MarsRoverTest methodsFor: 'tests' stamp: 'AC 10/24/2025 11:31:47'!
 test03StringUnabMueveHaciaAtras
 	| rover |
-	rover := MarsRover at: 0@0 heading: Norte new.
+	rover := MarsRover at: 0@0 heading: #North.
 	
 	self assert:  (rover isAt: 0@0).
 	
@@ -290,10 +321,10 @@ test03StringUnabMueveHaciaAtras
 	self assert:  (rover isAt: 0@-1).
 	! !
 
-!MarsRoverTest methodsFor: 'tests' stamp: 'AC 10/23/2025 10:12:48'!
+!MarsRoverTest methodsFor: 'tests' stamp: 'AC 10/24/2025 11:31:52'!
 test04StringFFMueveDosHaciaAdelante
 	| rover |
-	rover := MarsRover at: 0@0 heading: Norte new.
+	rover := MarsRover at: 0@0 heading: #North.
 	
 	self assert:  (rover isAt: 0@0).
 	
@@ -302,10 +333,10 @@ test04StringFFMueveDosHaciaAdelante
 	self assert:  (rover isAt: 0@2).
 	! !
 
-!MarsRoverTest methodsFor: 'tests' stamp: 'AC 10/23/2025 10:13:09'!
+!MarsRoverTest methodsFor: 'tests' stamp: 'AC 10/24/2025 11:31:58'!
 test05StringBBMueveDosHaciaAtras
 	| rover |
-	rover := MarsRover at: 0@0 heading: Norte new.
+	rover := MarsRover at: 0@0 heading: #North.
 	
 	self assert:  (rover isAt: 0@0).
 	
@@ -314,10 +345,10 @@ test05StringBBMueveDosHaciaAtras
 	self assert:  (rover isAt: 0@-2).
 	! !
 
-!MarsRoverTest methodsFor: 'tests' stamp: 'AC 10/23/2025 10:13:28'!
+!MarsRoverTest methodsFor: 'tests' stamp: 'AC 10/24/2025 11:32:04'!
 test06StringTamaño2CombinadoVuelveALaMismaPosicion
 	| rover |
-	rover := MarsRover at: 0@0 heading: Norte new.
+	rover := MarsRover at: 0@0 heading: #North.
 	
 	self assert:  (rover isAt: 0@0).
 	
@@ -326,11 +357,11 @@ test06StringTamaño2CombinadoVuelveALaMismaPosicion
 	self assert:  (rover isAt: 0@0).
 	! !
 
-!MarsRoverTest methodsFor: 'tests' stamp: 'AC 10/23/2025 10:13:59'!
+!MarsRoverTest methodsFor: 'tests' stamp: 'AC 10/24/2025 11:32:09'!
 test07StringTamañoMayorADosCombinadoLlegaALaPosicionCorrecta
 	| rover |
 	
-	rover := MarsRover at: 0@0 heading: Norte new.
+	rover := MarsRover at: 0@0 heading: #North.
 	
 	self assert:  (rover isAt: 0@0).
 	
@@ -339,202 +370,202 @@ test07StringTamañoMayorADosCombinadoLlegaALaPosicionCorrecta
 	self assert:  (rover isAt: 0@1).
 	! !
 
-!MarsRoverTest methodsFor: 'tests' stamp: 'AC 10/23/2025 10:14:47'!
+!MarsRoverTest methodsFor: 'tests' stamp: 'AC 10/24/2025 11:32:21'!
 test08StringVacioNoCambiaDireccion
 	| rover |
-	rover := MarsRover at: 0@0 heading: Norte new.
+	rover := MarsRover at: 0@0 heading: #North.
 	
-	self assert:  (rover heading: Norte).
+	self assert:  (rover heading: #North).
 	
 	rover process: ''.
 	
-	self assert:  (rover heading: Norte).
+	self assert:  (rover heading: #North).
 	! !
 
-!MarsRoverTest methodsFor: 'tests' stamp: 'AC 10/23/2025 10:18:24'!
+!MarsRoverTest methodsFor: 'tests' stamp: 'AC 10/24/2025 11:32:38'!
 test09StringUnaInstruccionDeMovimientoNoCambiaDireccion
 	| rover |
-	rover := MarsRover at: 0@0 heading: Norte new.
+	rover := MarsRover at: 0@0 heading: #North.
 	
-	self assert:  (rover heading: Norte).
+	self assert:  (rover heading: #North).
 	
 	rover process: 'f'.
 	
-	self assert:  (rover heading: Norte).
+	self assert:  (rover heading: #North).
 	! !
 
-!MarsRoverTest methodsFor: 'tests' stamp: 'AC 10/23/2025 10:18:45'!
+!MarsRoverTest methodsFor: 'tests' stamp: 'AC 10/24/2025 11:32:52'!
 test10StringUnaLGiraHaciaOeste
 	| rover |
-	rover := MarsRover at: 0@0 heading: Norte new.
+	rover := MarsRover at: 0@0 heading: #North.
 	
-	self assert:  (rover heading: Norte).
+	self assert:  (rover heading: #North).
 	
 	rover process: 'l'.
 	
-	self assert:  (rover heading: Oeste).
+	self assert:  (rover heading: #West).
 	! !
 
-!MarsRoverTest methodsFor: 'tests' stamp: 'AC 10/23/2025 10:19:06'!
+!MarsRoverTest methodsFor: 'tests' stamp: 'AC 10/24/2025 11:34:02'!
 test11StringUnaRGiraHaciaEste
 	| rover |
-	rover := MarsRover at: 0@0 heading: Norte new.
+	rover := MarsRover at: 0@0 heading: #North.
 	
-	self assert:  (rover heading: Norte).
+	self assert:  (rover heading: #North).
 	
 	rover process: 'r'.
 	
-	self assert:  (rover heading: Este).
+	self assert:  (rover heading: #East).
 	! !
 
-!MarsRoverTest methodsFor: 'tests' stamp: 'AC 10/23/2025 10:19:49'!
+!MarsRoverTest methodsFor: 'tests' stamp: 'AC 10/24/2025 11:34:17'!
 test12StringLLGiraApuntandoASur
 	| rover |
-	rover := MarsRover at: 0@0 heading: Norte new.
+	rover := MarsRover at: 0@0 heading: #North.
 	
-	self assert:  (rover heading: Norte).
+	self assert:  (rover heading: #North).
 	
 	rover process: 'll'.
 	
-	self assert:  (rover heading: Sur).
+	self assert:  (rover heading: #South).
 	! !
 
-!MarsRoverTest methodsFor: 'tests' stamp: 'AC 10/23/2025 10:21:04'!
+!MarsRoverTest methodsFor: 'tests' stamp: 'AC 10/24/2025 11:34:33'!
 test13StringRRGiraApuntandoASur
 	| rover |
-	rover := MarsRover at: 0@0 heading: Norte new.
+	rover := MarsRover at: 0@0 heading: #North.
 	
-	self assert:  (rover heading: Norte).
+	self assert:  (rover heading: #North).
 	
 	rover process: 'rr'.
 	
-	self assert:  (rover heading: Sur).
+	self assert:  (rover heading: #South).
 	! !
 
-!MarsRoverTest methodsFor: 'tests' stamp: 'AC 10/23/2025 10:21:46'!
+!MarsRoverTest methodsFor: 'tests' stamp: 'AC 10/24/2025 11:35:04'!
 test14StringCombinadoDeRotacionesLlegaAPuntoCardinalCorrecto
 	| rover |
-	rover := MarsRover at: 0@0 heading: Norte new.
+	rover := MarsRover at: 0@0 heading: #North.
 	
-	self assert:  (rover heading: Norte).
+	self assert:  (rover heading: #North).
 	
 	rover process: 'llrrlllrlrll'.
 	
-	self assert:  (rover heading: Norte).
+	self assert:  (rover heading: #North).
 	
 	rover process: 'lrrllrr'.
 	
-	self assert:  (rover heading: Este).
+	self assert:  (rover heading: #East).
 	! !
 
-!MarsRoverTest methodsFor: 'tests' stamp: 'AC 10/23/2025 10:23:11'!
+!MarsRoverTest methodsFor: 'tests' stamp: 'AC 10/24/2025 11:35:16'!
 test15GirarALaDerechaYAvanzarLlegaAPosicionCorrecta
 	| rover |
-	rover := MarsRover at: 0@0 heading: Norte new.
+	rover := MarsRover at: 0@0 heading: #North.
 	
-	self assert:  (rover isAt: 0@0 heading: Norte).
+	self assert:  (rover isAt: 0@0 heading: #North).
 	
 	rover process: 'rf'.
 	
-	self assert:  (rover isAt: 1@0 heading: Este).
+	self assert:  (rover isAt: 1@0 heading: #East).
 	! !
 
-!MarsRoverTest methodsFor: 'tests' stamp: 'AC 10/23/2025 10:24:17'!
+!MarsRoverTest methodsFor: 'tests' stamp: 'AC 10/24/2025 11:35:26'!
 test16GirarALaIzquieraYAvanzarLlegaAPosicionCorrecta
 	| rover |
-	rover := MarsRover at: 0@0 heading: Norte new.
+	rover := MarsRover at: 0@0 heading: #North.
 	
-	self assert:  (rover isAt: 0@0 heading: Norte).
+	self assert:  (rover isAt: 0@0 heading: #North).
 	
 	rover process: 'lf'.
 	
-	self assert:  (rover isAt: -1@0 heading: Oeste).
+	self assert:  (rover isAt: -1@0 heading: #West).
 	! !
 
-!MarsRoverTest methodsFor: 'tests' stamp: 'AC 10/23/2025 10:25:07'!
+!MarsRoverTest methodsFor: 'tests' stamp: 'AC 10/24/2025 11:35:38'!
 test17GirarALaDerechaEIrHaciaAtrasLlegaAPosicionCorrecta
 	| rover |
-	rover := MarsRover at: 0@0 heading: Norte new.
+	rover := MarsRover at: 0@0 heading: #North.
 	
-	self assert:  (rover isAt: 0@0 heading: Norte).
+	self assert:  (rover isAt: 0@0 heading: #North).
 	
 	rover process: 'rb'.
 	
-	self assert:  (rover isAt: -1@0 heading: Este).
+	self assert:  (rover isAt: -1@0 heading: #East).
 	! !
 
-!MarsRoverTest methodsFor: 'tests' stamp: 'AC 10/23/2025 10:26:00'!
+!MarsRoverTest methodsFor: 'tests' stamp: 'AC 10/24/2025 11:36:00'!
 test18GirarALaIzquierdaEIrHaciaAtrasLlegaAPosicionCorrecta
 	| rover |
-	rover := MarsRover at: 0@0 heading: Norte new.
+	rover := MarsRover at: 0@0 heading: #North.
 	
-	self assert:  (rover isAt: 0@0 heading: Norte).
+	self assert:  (rover isAt: 0@0 heading: #North).
 	
 	rover process: 'lb'.
 	
-	self assert:  (rover isAt: 1@0 heading: Oeste).
+	self assert:  (rover isAt: 1@0 heading: #West).
 	! !
 
-!MarsRoverTest methodsFor: 'tests' stamp: 'AC 10/23/2025 10:26:57'!
+!MarsRoverTest methodsFor: 'tests' stamp: 'AC 10/24/2025 11:36:11'!
 test19StringCombinadoDeMovimientosYRotacionesLlegaAPosicionYPuntoCardinalCorrecto
 	| rover |
-	rover := MarsRover at: 0@0 heading: Norte new.
+	rover := MarsRover at: 0@0 heading: #North.
 	
-	self assert:  (rover isAt: 0@0 heading: Norte).
+	self assert:  (rover isAt: 0@0 heading: #North).
 	
 	rover process: 'frrbbrfrllb'.
 	
-	self assert:  (rover isAt: -1@4 heading: Sur).
+	self assert:  (rover isAt: -1@4 heading: #South).
 	! !
 
-!MarsRoverTest methodsFor: 'tests' stamp: 'AC 10/23/2025 10:27:53'!
+!MarsRoverTest methodsFor: 'tests' stamp: 'AC 10/24/2025 11:36:21'!
 test20StringUnComandoErroneoNoModificaPosicionNiDireccion
 	| rover |
-	rover := MarsRover at: 0@0 heading: Norte new.
+	rover := MarsRover at: 0@0 heading: #North.
 	
-	self assert:  (rover isAt: 0@0 heading: Norte).
+	self assert:  (rover isAt: 0@0 heading: #North).
 	
 	rover process: 'm'.
 	
-	self assert:  (rover isAt: 0@0 heading: Norte).
+	self assert:  (rover isAt: 0@0 heading: #North).
 	! !
 
-!MarsRoverTest methodsFor: 'tests' stamp: 'AC 10/23/2025 10:28:33'!
+!MarsRoverTest methodsFor: 'tests' stamp: 'AC 10/24/2025 11:36:43'!
 test21StringCombinadoCamandosValidosEInvalidosDejaDeProcesarAlPrimerComandoInvalido
 	| rover |
-	rover := MarsRover at: 0@0 heading: Norte new.
+	rover := MarsRover at: 0@0 heading: #North.
 	
-	self assert:  (rover isAt: 0@0 heading: Norte).
+	self assert:  (rover isAt: 0@0 heading: #North).
 	
 	rover process: 'ffrrrblfFllbcbr'.
 	
-	self assert:  (rover isAt: 1@1 heading: Sur).
+	self assert:  (rover isAt: 1@1 heading: #South).
 	! !
 
-!MarsRoverTest methodsFor: 'tests' stamp: 'AC 10/23/2025 10:29:00'!
+!MarsRoverTest methodsFor: 'tests' stamp: 'AC 10/24/2025 11:36:54'!
 test22RoverInicializaEnPosicionPasada
 	| rover |
-	rover := MarsRover at: 16@33 heading: Norte new.
+	rover := MarsRover at: 16@33 heading: #North.
 	
 	self assert:  (rover isAt: 16@33).
 	
 	! !
 
-!MarsRoverTest methodsFor: 'tests' stamp: 'AC 10/23/2025 10:29:25'!
+!MarsRoverTest methodsFor: 'tests' stamp: 'AC 10/24/2025 11:37:07'!
 test23RoverInicializaEnPosicionYDireccionPasada
 	| rover |
-	rover := MarsRover at: -55@16 heading: Oeste new.
+	rover := MarsRover at: -55@16 heading: #West.
 	
-	self assert:  (rover isAt: -55@16 heading: Oeste).
+	self assert:  (rover isAt: -55@16 heading: #West).
 	
 	! !
 
-!MarsRoverTest methodsFor: 'tests' stamp: 'AC 10/23/2025 09:59:11'!
+!MarsRoverTest methodsFor: 'tests' stamp: 'AC 10/24/2025 11:37:20'!
 test24ErrorRoverNoInicializaEnUnPoint
 	| rover |
 	
 	self 
-		should: [ rover := MarsRover at: -55 heading: Oeste new] 
+		should: [ rover := MarsRover at: -55 heading: #East] 
 		raise: Error
 		withExceptionDo: [ :error |
 			self assert: MarsRover errorMessagePosicionNoEsUnPoint equals: error messageText.]
@@ -543,12 +574,12 @@ test24ErrorRoverNoInicializaEnUnPoint
 	
 	! !
 
-!MarsRoverTest methodsFor: 'tests' stamp: 'AC 10/23/2025 10:30:15'!
+!MarsRoverTest methodsFor: 'tests' stamp: 'AC 10/24/2025 11:37:38'!
 test25ErrorRoverNoInicializaConUnPuntoCardinal
 	| rover |
 	
 	self 
-		should: [ rover := MarsRover at: 55@-33 heading: Norte] 
+		should: [ rover := MarsRover at: 55@-33 heading: #S] 
 		raise: Error
 		withExceptionDo: [ :error |
 			self assert: MarsRover errorMessageDireccionNoEsUnPuntoCardinal equals: error messageText.]
