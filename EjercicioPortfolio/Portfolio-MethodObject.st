@@ -52,6 +52,11 @@ reportForPortfolio: aReportType
 initializeNamed: aName
 	name := aName .! !
 
+
+!Account methodsFor: 'name' stamp: 'AC 11/6/2025 20:00:20'!
+name
+	^name! !
+
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
 !classDefinition: 'Account class' category: #'Portfolio-Solucion'!
@@ -185,9 +190,9 @@ accountsReport: aReportType
 report: reportType 
 	^reportType reportForPortfolio: self.! !
 
-!Portfolio methodsFor: 'reports' stamp: 'AC 11/6/2025 18:02:12'!
+!Portfolio methodsFor: 'reports' stamp: 'AC 11/6/2025 21:19:41'!
 reportForPortfolio: aReportType
-	self accountsReport: aReportType! !
+	aReportType reportPortfolioForPortfolio: self.! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -294,9 +299,9 @@ addedTo: aPortfolio
 report: reportType 
 	^reportType reportForReceptiveAccount: self.! !
 
-!ReceptiveAccount methodsFor: 'reports' stamp: 'AC 11/6/2025 18:03:37'!
+!ReceptiveAccount methodsFor: 'reports' stamp: 'AC 11/6/2025 20:52:39'!
 reportForPortfolio: aReportType
-	self reportTransactions: aReportType! !
+	aReportType reportReceptiveAccountForPortfolio: self.! !
 
 !ReceptiveAccount methodsFor: 'reports' stamp: 'AC 11/6/2025 18:04:26'!
 reportTransactions: aReportType
@@ -312,15 +317,6 @@ Object subclass: #AccountReport
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Portfolio-Solucion'!
-
-!AccountReport methodsFor: 'transfer net' stamp: 'AC 11/4/2025 15:58:39'!
-transferNet
-	| transferBalance |
-	transferBalance := 0.
-	account transactions do: [:aTransaction | 
-		(aTransaction isKindOf: TransferTransactions)  ifTrue:[transferBalance := aTransaction affectBalance: transferBalance].
-		].
-	^transferBalance asString ! !
 
 
 !AccountReport methodsFor: 'reportsForClasses' stamp: 'AC 11/6/2025 17:56:10'!
@@ -352,6 +348,14 @@ reportForWithdraw: aWithdraw
 
 	self subclassResponsibility! !
 
+!AccountReport methodsFor: 'reportsForClasses' stamp: 'AC 11/6/2025 21:20:04'!
+reportPortfolioForPortfolio: aPortfolio
+	self subclassResponsibility ! !
+
+!AccountReport methodsFor: 'reportsForClasses' stamp: 'AC 11/6/2025 20:52:39'!
+reportReceptiveAccountForPortfolio: aReceptiveAccount
+	self subclassResponsibility ! !
+
 
 !AccountReport methodsFor: 'initialization' stamp: 'AC 11/6/2025 18:26:11'!
 initializeWith: anAccount
@@ -363,10 +367,9 @@ initializeWith: anAccount
 AccountReport class
 	instanceVariableNames: ''!
 
-!AccountReport class methodsFor: 'as yet unclassified' stamp: 'AC 11/6/2025 18:22:42'!
+!AccountReport class methodsFor: 'as yet unclassified' stamp: 'AC 11/6/2025 20:32:12'!
 on: anAccount
 
-	
 	^self new initializeFor: anAccount .! !
 
 
@@ -390,7 +393,7 @@ lines
 	! !
 
 
-!AccountSummary methodsFor: 'reportsForClasses' stamp: 'AC 11/6/2025 18:17:32'!
+!AccountSummary methodsFor: 'reportsForClasses' stamp: 'AC 11/6/2025 20:08:58'!
 reportForDeposit: aDeposit
 	
 	report nextPutAll: 'Depósito por ', aDeposit value asString.
@@ -424,47 +427,188 @@ reportForWithdraw: aWithdraw
 	report nextPutAll: 'Extracción por ', aWithdraw value asString .
 	report cr.! !
 
+!AccountSummary methodsFor: 'reportsForClasses' stamp: 'AC 11/6/2025 21:20:42'!
+reportPortfolioForPortfolio: aPortfolio
+	^aPortfolio accountsReport: self! !
+
+!AccountSummary methodsFor: 'reportsForClasses' stamp: 'AC 11/6/2025 20:54:16'!
+reportReceptiveAccountForPortfolio: aReceptiveAccount
+	aReceptiveAccount reportTransactions: self.! !
+
 
-!classDefinition: #TransferNet category: #'Portfolio-Solucion'!
-AccountReport subclass: #TransferNet
+!classDefinition: #AccountTransferNet category: #'Portfolio-Solucion'!
+AccountReport subclass: #AccountTransferNet
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Portfolio-Solucion'!
 
-!TransferNet methodsFor: 'initialization' stamp: 'AC 11/6/2025 18:24:32'!
+!AccountTransferNet methodsFor: 'initialization' stamp: 'AC 11/6/2025 18:24:32'!
 initializeFor: anAccount 
 	account := anAccount.
 	report := 0.! !
 
 
-!TransferNet methodsFor: 'getReport' stamp: 'AC 11/6/2025 18:28:42'!
+!AccountTransferNet methodsFor: 'getReport' stamp: 'AC 11/6/2025 18:28:42'!
 value
 	account report: self.
 	^report ! !
 
 
-!TransferNet methodsFor: 'reportsForClasses' stamp: 'AC 11/6/2025 18:35:15'!
+!AccountTransferNet methodsFor: 'reportsForClasses' stamp: 'AC 11/6/2025 18:35:15'!
 reportForDeposit: aDeposit ! !
 
-!TransferNet methodsFor: 'reportsForClasses' stamp: 'AC 11/6/2025 18:33:28'!
+!AccountTransferNet methodsFor: 'reportsForClasses' stamp: 'AC 11/6/2025 18:33:28'!
 reportForIncomingTransfer: anIncomingTransfer 
 	report := report + anIncomingTransfer value! !
 
-!TransferNet methodsFor: 'reportsForClasses' stamp: 'AC 11/6/2025 18:31:53'!
+!AccountTransferNet methodsFor: 'reportsForClasses' stamp: 'AC 11/6/2025 18:31:53'!
 reportForOutgoingTransfer: anOutgoingTransfer 
 	report := report - anOutgoingTransfer value! !
 
-!TransferNet methodsFor: 'reportsForClasses' stamp: 'AC 11/6/2025 18:38:19'!
+!AccountTransferNet methodsFor: 'reportsForClasses' stamp: 'AC 11/6/2025 18:38:19'!
 reportForPortfolio: aPortfolio 
 	aPortfolio accountsReport: self.! !
 
-!TransferNet methodsFor: 'reportsForClasses' stamp: 'AC 11/6/2025 18:32:59'!
+!AccountTransferNet methodsFor: 'reportsForClasses' stamp: 'AC 11/6/2025 18:32:59'!
 reportForReceptiveAccount: aReceptiveAccount 
 	aReceptiveAccount reportTransactions: self.! !
 
-!TransferNet methodsFor: 'reportsForClasses' stamp: 'AC 11/6/2025 18:35:25'!
+!AccountTransferNet methodsFor: 'reportsForClasses' stamp: 'AC 11/6/2025 18:35:25'!
 reportForWithdraw: aWithdraw ! !
+
+!AccountTransferNet methodsFor: 'reportsForClasses' stamp: 'AC 11/6/2025 21:20:51'!
+reportPortfolioForPortfolio: aPortfolio
+	^aPortfolio accountsReport: self! !
+
+!AccountTransferNet methodsFor: 'reportsForClasses' stamp: 'AC 11/6/2025 20:54:52'!
+reportReceptiveAccountForPortfolio: aReceptiveAccount
+	aReceptiveAccount reportTransactions: self.! !
+
+
+!classDefinition: #PortfolioReport category: #'Portfolio-Solucion'!
+AccountReport subclass: #PortfolioReport
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Portfolio-Solucion'!
+
+!PortfolioReport methodsFor: 'initialization' stamp: 'AC 11/6/2025 20:17:42'!
+initializeFor: anAccount 
+	self subclassResponsibility .! !
+
+
+!PortfolioReport methodsFor: 'reportsForClasses' stamp: 'AC 11/6/2025 20:20:36'!
+reportForPortfolio: aPortfolio 
+	self subclassResponsibility .! !
+
+!PortfolioReport methodsFor: 'reportsForClasses' stamp: 'AC 11/6/2025 21:21:33'!
+reportPortfolioForPortfolio: aPortfolio 
+	self subclassResponsibility .! !
+
+!PortfolioReport methodsFor: 'reportsForClasses' stamp: 'AC 11/6/2025 20:55:36'!
+reportReceptiveAccountForPortfolio: aReceptiveAccount 
+	self subclassResponsibility .! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'PortfolioReport class' category: #'Portfolio-Solucion'!
+PortfolioReport class
+	instanceVariableNames: ''!
+
+!PortfolioReport class methodsFor: 'instance creation' stamp: 'AC 11/6/2025 20:32:52'!
+on: anAccount
+	(anAccount isKindOf: ReceptiveAccount) ifTrue:[ self error: self errorMessageCannotBeUsedOnReceptiveAccount].
+	^self new initializeFor: anAccount .! !
+
+
+!PortfolioReport class methodsFor: 'errorMessages' stamp: 'AC 11/6/2025 20:34:13'!
+errorMessageCannotBeUsedOnReceptiveAccount
+	^'Report is only available for Portfolios accounts'! !
+
+
+!classDefinition: #PortfolioTreePrinter category: #'Portfolio-Solucion'!
+PortfolioReport subclass: #PortfolioTreePrinter
+	instanceVariableNames: 'portfolioTreeLevel'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Portfolio-Solucion'!
+
+!PortfolioTreePrinter methodsFor: 'initialization' stamp: 'AC 11/6/2025 21:31:06'!
+initializeFor: aPortfolio
+	account := aPortfolio.
+	report := ReadWriteStream on: (String new).
+	portfolioTreeLevel := 0.! !
+
+
+!PortfolioTreePrinter methodsFor: 'getReport' stamp: 'AC 11/6/2025 20:20:13'!
+lines
+	account report: self.
+	^report contents .! !
+
+
+!PortfolioTreePrinter methodsFor: 'reportsForClasses' stamp: 'AC 11/6/2025 21:35:13'!
+reportForPortfolio: aPortfolio 
+	report nextPutAll: aPortfolio name.
+	portfolioTreeLevel := portfolioTreeLevel +1.
+	aPortfolio accountsReport: self.! !
+
+!PortfolioTreePrinter methodsFor: 'reportsForClasses' stamp: 'AC 11/6/2025 21:32:31'!
+reportPortfolioForPortfolio: aPortfolio
+	self  nextLineWithTab .
+	report nextPutAll: aPortfolio name.
+	portfolioTreeLevel := portfolioTreeLevel +1.
+	aPortfolio accountsReport: self.! !
+
+!PortfolioTreePrinter methodsFor: 'reportsForClasses' stamp: 'AC 11/6/2025 20:58:09'!
+reportReceptiveAccountForPortfolio: aReceptiveAccount 
+	self nextLineWithTab.
+	report nextPutAll: aReceptiveAccount name.! !
+
+
+!PortfolioTreePrinter methodsFor: 'modifiers' stamp: 'AC 11/6/2025 22:20:30'!
+addTab
+
+	^ 3* portfolioTreeLevel timesRepeat: [report nextPutAll:' ']! !
+
+!PortfolioTreePrinter methodsFor: 'modifiers' stamp: 'AC 11/6/2025 22:20:30'!
+nextLineWithTab
+	report newLine.
+	self addTab.! !
+
+
+!classDefinition: #PortfolioSummary category: #'Portfolio-Solucion'!
+PortfolioTreePrinter subclass: #PortfolioSummary
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Portfolio-Solucion'!
+
+!PortfolioSummary methodsFor: 'reportsForClasses' stamp: 'AC 11/6/2025 21:54:41'!
+reportForPortfolio: aPortfolio 
+	super reportForPortfolio: aPortfolio.
+	self nextLineWithTab.
+	report nextPutAll: 'Balance = ',aPortfolio balance asString.
+	! !
+
+!PortfolioSummary methodsFor: 'reportsForClasses' stamp: 'AC 11/6/2025 22:49:14'!
+reportPortfolioForPortfolio: aPortfolio 
+	super reportPortfolioForPortfolio: aPortfolio .
+	self nextLineWithTab .
+	report nextPutAll: 'Balance = ', aPortfolio balance asString .
+	portfolioTreeLevel := portfolioTreeLevel -1.! !
+
+!PortfolioSummary methodsFor: 'reportsForClasses' stamp: 'AC 11/6/2025 22:22:20'!
+reportReceptiveAccountForPortfolio: aReceptiveAccount 
+	| accountSummaryReport |
+	super reportReceptiveAccountForPortfolio: aReceptiveAccount .
+	portfolioTreeLevel := portfolioTreeLevel +1.
+	accountSummaryReport := AccountSummary on: aReceptiveAccount .
+	accountSummaryReport lines linesDo:[:aLine | 
+											self nextLineWithTab .
+											report nextPutAll: aLine
+										].
+	portfolioTreeLevel := portfolioTreeLevel - 1.! !
 
 
 !classDefinition: #AccountTransaction category: #'Portfolio-Solucion'!
@@ -739,7 +883,7 @@ test01AccountSummaryOfEmptyAccountShowsBalanceInZero
 	self assert: 'Balance = 0' equals: accountReport lines.
 	self assert: 'Balance = 0' equals: portfolioReport lines.! !
 
-!AccountReportTest methodsFor: 'tests' stamp: 'AC 11/6/2025 18:23:13'!
+!AccountReportTest methodsFor: 'tests' stamp: 'AC 11/6/2025 20:08:41'!
 test02AccountSummaryOfAccountWithOneTransactionShowsTransactionInformationAndAccountBalance
 
 	| account result report |
@@ -753,6 +897,7 @@ test02AccountSummaryOfAccountWithOneTransactionShowsTransactionInformationAndAcc
 	result nextPutAll: 'Depósito por 100'.
 	result cr.
 	result nextPutAll: 'Balance = 100'.
+	
 	
 	self assert: result contents equals: report lines.! !
 
@@ -821,34 +966,34 @@ test04AccountSummaryOfPortfolioWithManyTransactionsShowsTransactionsInformationA
 	
 	self assert: result contents equals: report lines.! !
 
-!AccountReportTest methodsFor: 'tests' stamp: 'AC 11/6/2025 18:23:53'!
+!AccountReportTest methodsFor: 'tests' stamp: 'AC 11/6/2025 20:13:22'!
 test05TransferNetOfEmptyAccountIsZero
 
 	| report1 report2 account portfolio |
 	
 	account := ReceptiveAccount new.
 	portfolio := Portfolio new.
-	report1 := TransferNet on: account .
-	report2 := TransferNet on: portfolio .
+	report1 := AccountTransferNet on: account .
+	report2 := AccountTransferNet on: portfolio .
 	
 	self assert: 0 equals: report1 value .
 	self assert: 0 equals: report2 value .! !
 
-!AccountReportTest methodsFor: 'tests' stamp: 'AC 11/6/2025 18:32:36'!
+!AccountReportTest methodsFor: 'tests' stamp: 'AC 11/6/2025 20:13:22'!
 test06TransferNetOfAccountWithOneTransferHasItsValue
 
 	| account1 account2 report1 report2 |
 	
 	account1 := ReceptiveAccount new.
 	account2 := ReceptiveAccount new.
-	report1 := TransferNet on: account1 .
-	report2 := TransferNet on: account2.
+	report1 := AccountTransferNet on: account1 .
+	report2 := AccountTransferNet on: account2.
 	AccountTransfer register: 20 from:account1  to: account2. 
 	
 	self assert: -20  equals: report1 value.
 	self assert: 20 equals: report2 value.! !
 
-!AccountReportTest methodsFor: 'tests' stamp: 'AC 11/6/2025 18:39:15'!
+!AccountReportTest methodsFor: 'tests' stamp: 'AC 11/6/2025 20:13:22'!
 test07TransferNetOfAccountWithManyTransactionsIsOnlyTransfersBalance
 
 	| account account2 report1 report2 |
@@ -860,13 +1005,13 @@ test07TransferNetOfAccountWithManyTransactionsIsOnlyTransfersBalance
 	AccountTransfer register: 20 from:account  to:account2. 
 	AccountTransfer register: 30 from:account2  to:account. 
 	
-	report1 := TransferNet on: account .
-	report2 := TransferNet on: account2.
+	report1 := AccountTransferNet on: account .
+	report2 := AccountTransferNet on: account2.
 	
 	self assert: 10 equals: report1 value .
 	self assert: -10 equals: report2 value .! !
 
-!AccountReportTest methodsFor: 'tests' stamp: 'AC 11/6/2025 18:39:56'!
+!AccountReportTest methodsFor: 'tests' stamp: 'AC 11/6/2025 20:13:22'!
 test08TransferNetOfPortfolioWithManyTransactionsIsOnlyTransfersBalance
 
 	| report account account2 portfolio1 portfolio2 account3 report2 |
@@ -887,11 +1032,225 @@ test08TransferNetOfPortfolioWithManyTransactionsIsOnlyTransfersBalance
 	portfolio2:= Portfolio with: account2.
 	portfolio1 add: portfolio2 .
 	
-	report := TransferNet on: portfolio1.
-	report2 := TransferNet on: portfolio2 .
+	report := AccountTransferNet on: portfolio1.
+	report2 := AccountTransferNet on: portfolio2 .
 	
 	self assert: 80 equals: report value.
 	self assert: 90 equals: report2 value.! !
+
+!AccountReportTest methodsFor: 'tests' stamp: 'AC 11/6/2025 20:25:53'!
+test09PortfolioTreePrinterEmptyPortfolioPrintsItsName
+	| portfolio report |
+	portfolio := Portfolio named: 'Portfolio F1'.
+	
+	report := PortfolioTreePrinter on: portfolio.
+	
+	self assert: 'Portfolio F1' equals: report lines.! !
+
+!AccountReportTest methodsFor: 'tests' stamp: 'AC 11/6/2025 20:38:27'!
+test10PortfolioTreePrinterCannotBeUsedForReceptiveAccount
+	| report account |
+	account := ReceptiveAccount named: 'Cuenta de Franco Colapinto'.
+	
+	self should:[report := PortfolioTreePrinter on: account]
+	raise: Error
+	withExceptionDo: [:error |
+						self assert: PortfolioTreePrinter errorMessageCannotBeUsedOnReceptiveAccount equals: error messageText.	
+					]! !
+
+!AccountReportTest methodsFor: 'tests' stamp: 'AC 11/6/2025 21:03:47'!
+test11PortfolioTreePrinterWithOneAccountShowsPortfolioAndAccountNames
+	| report account portfolio result |
+	
+	account := ReceptiveAccount named: 'Cuenta de Franco Colapinto'.
+	
+	portfolio := Portfolio named: 'Portfolio F1'  with: account.
+	
+	report := PortfolioTreePrinter on: portfolio.
+	result := WriteStream on: (String new).
+	result nextPutAll: 'Portfolio F1'.
+	result newLine.
+	result nextPutAll: '   '.
+	result nextPutAll: 'Cuenta de Franco Colapinto'.
+	
+	self assert: result contents equals: report lines.! !
+
+!AccountReportTest methodsFor: 'tests' stamp: 'AC 11/6/2025 21:09:00'!
+test12PortfolioTreePrinterWithManyAccountsShowsPortfolioAndAccountsNames
+	| report account portfolio result account2 |
+	
+	account := ReceptiveAccount named: 'Cuenta de Franco Colapinto'.
+	account2 := ReceptiveAccount named: 'Cuenta de Charles Leclerc'.
+	
+	portfolio := Portfolio named: 'Portfolio F1'  with: account with: account2.
+	
+	report := PortfolioTreePrinter on: portfolio.
+	result := WriteStream on: (String new).
+	result nextPutAll: 'Portfolio F1'.
+	result newLine.
+	result nextPutAll: '   '.
+	result nextPutAll: 'Cuenta de Franco Colapinto'.
+	result newLine.
+	result nextPutAll: '   '.
+	result nextPutAll: 'Cuenta de Charles Leclerc'.
+	
+	self assert: result contents equals: report lines.! !
+
+!AccountReportTest methodsFor: 'tests' stamp: 'AC 11/6/2025 21:14:45'!
+test13PortfolioTreePrinterWithManyAccountsAndPortfolioShowsPortfoliosAndAccountsNames
+	| report account result account2 account3 portfolio1 portfolio2 |
+	
+	account := ReceptiveAccount named: 'Cuenta de Franco Colapinto'.
+	account2 := ReceptiveAccount named: 'Cuenta de Charles Leclerc'.
+	account3 := ReceptiveAccount  named: 'Cuenta de Lewis Hamilton'.
+	
+	portfolio1 := Portfolio named: 'Portfolio Ferrari'  with: account2 with: account3.
+	portfolio2 := Portfolio named: 'Portfolio F1' with: account with:portfolio1.
+	
+	report := PortfolioTreePrinter on: portfolio2.
+	
+	result := WriteStream on: (String new).
+	result nextPutAll: 'Portfolio F1'.
+	result newLine.
+	result nextPutAll: '   '.
+	result nextPutAll: 'Cuenta de Franco Colapinto'.
+	result newLine.
+	result nextPutAll: '   '.
+	result nextPutAll: 'Portfolio Ferrari'.
+	result newLine.
+	result nextPutAll: '      '.
+	result nextPutAll: 'Cuenta de Charles Leclerc'.
+	result newLine.
+	result nextPutAll: '      '.
+	result nextPutAll: 'Cuenta de Lewis Hamilton'.
+	
+	self assert: result contents equals: report lines.! !
+
+!AccountReportTest methodsFor: 'tests' stamp: 'AC 11/6/2025 21:37:31'!
+test14PortfolioSummaryEmptyPortfolioPrintsItsName
+	| portfolio report |
+	portfolio := Portfolio named: 'Portfolio F1'.
+	
+	report := PortfolioTreePrinter on: portfolio.
+	
+	self assert: 'Portfolio F1' equals: report lines.! !
+
+!AccountReportTest methodsFor: 'tests' stamp: 'AC 11/6/2025 21:49:22'!
+test15PortfolioSummaryEmptyPortfolioPrintsItsNameAndBalance
+	| portfolio report result |
+	portfolio := Portfolio named: 'Portfolio F1'.
+	
+	report := PortfolioSummary on: portfolio.
+	
+	result := ReadWriteStream on: (String new).
+	result nextPutAll: 'Portfolio F1'.
+	result newLine.
+	result nextPutAll: '   Balance = 0'.
+	
+	self assert: result contents equals: report lines.! !
+
+!AccountReportTest methodsFor: 'tests' stamp: 'AC 11/6/2025 22:01:57'!
+test16PortfolioSummaryWithOneAccountPrintsItsNameAndBalanceAndAccountNameWithTransactions
+	| portfolio report result account |
+
+	account := ReceptiveAccount named: 'Cuenta de Franco Colapinto'.
+	
+	portfolio := Portfolio named: 'Portfolio F1'  with: account.
+	
+	Deposit register: 434343 on: account. 
+	
+	report := PortfolioSummary on: portfolio.
+	result := WriteStream on: (String new).
+	result nextPutAll: 'Portfolio F1'.
+	result newLine.
+	result nextPutAll: '   '.
+	result nextPutAll: 'Cuenta de Franco Colapinto'.
+	result newLine.
+	result nextPutAll: '      Depósito por 434343'.
+	result newLine .
+	result nextPutAll: '      Balance = 434343'.
+	result newLine.
+	result nextPutAll: '   Balance = 434343'.
+	
+	self assert: result contents equals: report lines.! !
+
+!AccountReportTest methodsFor: 'tests' stamp: 'AC 11/6/2025 22:43:56'!
+test17PortfolioSummaryWithManyAccountsShowsPortfolioAndAccountsNamesAndSummaries
+	| report account result account2 account3 portfolio1 portfolio2 |
+	
+	account := ReceptiveAccount named: 'Cuenta de Franco Colapinto'.
+	account2 := ReceptiveAccount named: 'Cuenta de Charles Leclerc'.
+	account3 := ReceptiveAccount  named: 'Cuenta de Lewis Hamilton'.
+	
+	portfolio1 := Portfolio named: 'Portfolio Ferrari'  with: account2 with: account3.
+	portfolio2 := Portfolio named: 'Portfolio F1' with: account with:portfolio1.
+	
+	report := PortfolioTreePrinter on: portfolio2.
+	
+	result := WriteStream on: (String new).
+	result nextPutAll: 'Portfolio F1'.
+	result newLine.
+	result nextPutAll: '   '.
+	result nextPutAll: 'Cuenta de Franco Colapinto'.
+	result newLine.
+	result nextPutAll: '   '.
+	result nextPutAll: 'Portfolio Ferrari'.
+	result newLine.
+	result nextPutAll: '      '.
+	result nextPutAll: 'Cuenta de Charles Leclerc'.
+	result newLine.
+	result nextPutAll: '      '.
+	result nextPutAll: 'Cuenta de Lewis Hamilton'.
+	
+	self assert: result contents equals: report lines.! !
+
+!AccountReportTest methodsFor: 'tests' stamp: 'AC 11/6/2025 22:52:36'!
+test18PortfolioSummaryWithManyAccountsAndPortfolioShowsPortfoliosAndAccountsNamesAndSummaries
+| report account portfolio result account2 account3 portfolio2 |
+	
+	account := ReceptiveAccount named: 'Cuenta de Franco Colapinto'.
+	account2 := ReceptiveAccount named: 'Cuenta de Charles Leclerc'.
+	account3 := ReceptiveAccount named: 'Cuenta de Max Verstappen'.
+	
+	portfolio2 := Portfolio named: 'Pilotos Experimentados'  with: account3 with: account2.
+	portfolio := Portfolio named: 'Pilotos F1' with: account with: portfolio2.
+	
+	AccountTransfer register: 16161616 from: account2  to: account. 
+	Withdraw register: 16 on: account.
+	Deposit register: 331 on: account3. 
+	
+	report := PortfolioSummary on: portfolio.
+	result := WriteStream on: (String new).
+	result nextPutAll: 'Pilotos F1'.
+	result newLine.
+	result nextPutAll: '   Cuenta de Franco Colapinto'.
+	result newLine.
+	result nextPutAll: '      Entrada por transferencia de 16161616'.
+	result newLine .
+	result nextPutAll: '      Extracción por 16'.
+	result newLine .
+	result nextPutAll: '      Balance = 16161600'.
+	result newLine.
+	result nextPutAll: '   Pilotos Experimentados'.
+	result newLine.
+	result nextPutAll: '      Cuenta de Max Verstappen'.
+	result newLine.
+	result nextPutAll: '         Depósito por 331'.
+	result newLine.
+	result nextPutAll: '         Balance = 331'.
+	result newLine.
+	result nextPutAll: '      Cuenta de Charles Leclerc'.
+	result newLine .
+	result nextPutAll: '         Salida por transferencia de 16161616'.
+	result newLine .
+	result nextPutAll: '         Balance = -16161616'.
+	result newLine.
+	result nextPutAll: '      Balance = -16161285'.
+	result newLine .
+	result nextPutAll: '   Balance = 315'.
+	
+	
+	self assert: result contents equals: report lines.! !
 
 
 !classDefinition: #PortfolioTest category: #'Portfolio-Solucion'!
@@ -1294,4 +1653,4 @@ test05CanGoFromWithdrawLegToDepositLeg
 	self assert: transfer depositLeg equals: transfer withdrawLeg transfer depositLeg .
 	
 ! !
-(Smalltalk at: #qq__ ifAbsentPut: [OrderedCollection new]) add: (#(74 65 99 92 122 108 121 122 99 72 115 108 99 75 118 106 124 116 108 117 123 122 99 76 122 123 124 107 112 118 99 77 104 106 124 115 123 104 107 99 57 55 57 60 99 80 117 110 108 117 112 108 121 112 104 39 56 99 126 112 117 107 118 126 122 61 59 17 74 65 99 92 122 108 121 122 99 72 115 108 99 75 118 106 124 116 108 117 123 122 99 76 122 123 124 107 112 118 99 77 104 106 124 115 123 104 107 99 57 55 57 60 99 80 117 110 108 117 112 108 121 112 104 39 56 99 126 112 117 107 118 126 122 61 59 99 74 124 112 122 92 117 112 125 108 121 122 112 123 128 52 62 61 59 56 87 118 121 123 109 118 115 112 118 57 53 112 116 104 110 108 17 94 112 117 58 57 17 61 53 57 17 95 61 59 17 86 119 108 117 39 90 116 104 115 115 123 104 115 114 39 74 118 110 98 90 119 124 121 100 39 93 84 39 98 83 112 125 108 91 128 119 112 117 110 74 118 80 117 123 108 121 119 121 108 123 108 121 39 93 84 84 104 114 108 121 53 118 122 106 118 110 52 108 108 116 53 58 61 61 57 100 17 94 112 117 107 118 126 122 17 94 112 117 58 57 39 105 124 112 115 123 39 118 117 39 84 104 121 39 39 56 39 57 55 57 60 39 55 56 65 55 59 65 57 57 39 78 84 91 39 74 118 116 119 112 115 108 121 65 39 59 53 57 53 56 39 74 118 116 119 104 123 112 105 115 108 39 74 115 104 117 110 39 63 53 55 53 56 39 47 123 104 110 122 54 89 76 83 76 72 90 76 102 63 55 56 54 109 112 117 104 115 48 17 83 112 125 108 91 128 119 112 117 110 74 118 80 117 123 108 121 119 121 108 123 108 121 39 93 84 84 104 114 108 121 53 118 122 106 118 110 52 108 108 116 53 58 61 61 57 39 124 124 112 107 65 39 57 61 104 55 55 106 105 106 52 58 56 60 107 52 59 106 108 107 52 104 108 60 105 52 61 60 55 58 60 56 56 61 58 106 58 62 39 84 104 121 39 39 56 39 57 55 57 60 17 83 112 125 108 91 128 119 112 117 110 74 118 110 112 123 39 93 84 84 104 114 108 121 53 118 122 106 118 110 52 108 108 116 53 58 61 61 57 39 124 124 112 107 65 39 57 61 104 55 55 106 105 106 52 58 56 60 107 52 59 106 108 107 52 104 108 60 105 52 61 60 55 58 60 56 56 61 58 106 58 62 39 84 104 121 39 39 56 39 57 55 57 60 17 93 84 65 39 57 55 57 60 56 55 55 61 56 64 58 59 39 111 108 121 117 104 117 71 84 104 106 73 118 118 114 52 87 121 118 52 107 108 52 79 108 121 117 104 117 52 57 53 115 118 106 104 115 65 75 118 106 124 116 108 117 123 122 54 93 84 54 118 119 108 117 122 116 104 115 115 123 104 115 114 52 125 116 39 75 104 123 108 65 39 84 118 117 39 86 106 123 39 61 39 56 57 65 58 59 65 57 56 39 57 55 57 60 39 74 118 116 116 112 123 79 104 122 111 65 39 108 107 58 60 59 63 61 39 87 115 124 110 112 117 122 65 39 57 55 57 60 56 55 55 61 56 64 58 59 39 111 108 121 117 104 117 71 84 104 106 73 118 118 114 52 87 121 118 52 107 108 52 79 108 121 117 104 117 52 57 53 115 118 106 104 115 65 75 118 106 124 116 108 117 123 122 54 93 84 54 118 119 108 117 122 116 104 115 115 123 104 115 114 52 125 116 17 199 175 217 199 17 56 64 57 53 56 61 63 53 57 56 55 53 56 64 57 17 83 72 87 91 86 87 52 57 73 79 64 59 80 61 75 53 115 104 117 17 83 72 87 91 86 87 52 57 73 79 64 59 80 61 75 17 52 52 52 52 52 52 52 52 52 52 17 57 55 57 60 52 56 56 52 55 61 91 56 60 65 58 59 65 55 64 53 55 63 56 62 63 57 52 55 58 65 55 55 17 74 65 99 92 122 108 121 122 99 72 115 108 99 75 118 106 124 116 108 117 123 122 99 76 122 123 124 107 112 118 99 77 104 106 124 115 123 104 107 99 57 55 57 60 99 80 117 110 108 117 112 108 121 112 104 39 56 99 91 104 115 115 108 121 108 122 80 117 110 108 56 99 76 113 108 121 106 112 106 112 118 87 118 121 123 109 118 115 112 118 99 87 118 121 123 109 118 115 112 118 52 90 118 115 124 106 112 118 117 53 122 123 17 59 56 56 60 62 17 52 52 52 52 52 52 52 52 52 52 17 17 52 52 52 52 52 52 52 52 52 52 17 52 52 52 52 52 52 52 52 52 52 17 57 55 57 60 52 56 56 52 55 61 91 56 63 65 60 64 65 55 58 53 55 55 61 62 63 57 52 55 58 65 55 55 17 74 65 99 92 122 108 121 122 99 72 115 108 99 75 118 106 124 116 108 117 123 122 99 76 122 123 124 107 112 118 99 77 104 106 124 115 123 104 107 99 57 55 57 60 99 80 117 110 108 117 112 108 121 112 104 39 56 99 126 112 117 107 118 126 122 61 59 52 92 122 108 121 77 112 115 108 122 99 77 112 115 108 86 124 123 122 99 87 118 121 123 109 118 115 112 118 52 84 108 123 111 118 107 86 105 113 108 106 123 53 122 123 17 58 64 59 59 63 17 52 52 52 52 52 52 52 52 52 52 17 17))!
+(Smalltalk at: #qq__ ifAbsentPut: [OrderedCollection new]) add: (#(74 65 99 92 122 108 121 122 99 72 115 108 99 75 118 106 124 116 108 117 123 122 99 76 122 123 124 107 112 118 99 77 104 106 124 115 123 104 107 99 57 55 57 60 99 80 117 110 108 117 112 108 121 112 104 39 56 99 126 112 117 107 118 126 122 61 59 17 74 65 99 92 122 108 121 122 99 72 115 108 99 75 118 106 124 116 108 117 123 122 99 76 122 123 124 107 112 118 99 77 104 106 124 115 123 104 107 99 57 55 57 60 99 80 117 110 108 117 112 108 121 112 104 39 56 99 126 112 117 107 118 126 122 61 59 99 74 124 112 122 92 117 112 125 108 121 122 112 123 128 52 62 61 59 56 87 118 121 123 109 118 115 112 118 57 53 112 116 104 110 108 17 94 112 117 58 57 17 61 53 57 17 95 61 59 17 86 119 108 117 39 90 116 104 115 115 123 104 115 114 39 74 118 110 98 90 119 124 121 100 39 93 84 39 98 83 112 125 108 91 128 119 112 117 110 74 118 80 117 123 108 121 119 121 108 123 108 121 39 93 84 84 104 114 108 121 53 118 122 106 118 110 52 108 108 116 53 58 61 61 57 100 17 94 112 117 107 118 126 122 17 94 112 117 58 57 39 105 124 112 115 123 39 118 117 39 84 104 121 39 39 56 39 57 55 57 60 39 55 56 65 55 59 65 57 57 39 78 84 91 39 74 118 116 119 112 115 108 121 65 39 59 53 57 53 56 39 74 118 116 119 104 123 112 105 115 108 39 74 115 104 117 110 39 63 53 55 53 56 39 47 123 104 110 122 54 89 76 83 76 72 90 76 102 63 55 56 54 109 112 117 104 115 48 17 83 112 125 108 91 128 119 112 117 110 74 118 80 117 123 108 121 119 121 108 123 108 121 39 93 84 84 104 114 108 121 53 118 122 106 118 110 52 108 108 116 53 58 61 61 57 39 124 124 112 107 65 39 57 61 104 55 55 106 105 106 52 58 56 60 107 52 59 106 108 107 52 104 108 60 105 52 61 60 55 58 60 56 56 61 58 106 58 62 39 84 104 121 39 39 56 39 57 55 57 60 17 83 112 125 108 91 128 119 112 117 110 74 118 110 112 123 39 93 84 84 104 114 108 121 53 118 122 106 118 110 52 108 108 116 53 58 61 61 57 39 124 124 112 107 65 39 57 61 104 55 55 106 105 106 52 58 56 60 107 52 59 106 108 107 52 104 108 60 105 52 61 60 55 58 60 56 56 61 58 106 58 62 39 84 104 121 39 39 56 39 57 55 57 60 17 93 84 65 39 57 55 57 60 56 55 55 61 56 64 58 59 39 111 108 121 117 104 117 71 84 104 106 73 118 118 114 52 87 121 118 52 107 108 52 79 108 121 117 104 117 52 57 53 115 118 106 104 115 65 75 118 106 124 116 108 117 123 122 54 93 84 54 118 119 108 117 122 116 104 115 115 123 104 115 114 52 125 116 39 75 104 123 108 65 39 84 118 117 39 86 106 123 39 61 39 56 57 65 58 59 65 57 56 39 57 55 57 60 39 74 118 116 116 112 123 79 104 122 111 65 39 108 107 58 60 59 63 61 39 87 115 124 110 112 117 122 65 39 57 55 57 60 56 55 55 61 56 64 58 59 39 111 108 121 117 104 117 71 84 104 106 73 118 118 114 52 87 121 118 52 107 108 52 79 108 121 117 104 117 52 57 53 115 118 106 104 115 65 75 118 106 124 116 108 117 123 122 54 93 84 54 118 119 108 117 122 116 104 115 115 123 104 115 114 52 125 116 17 199 175 217 199 17 56 64 57 53 56 61 63 53 57 56 55 53 56 64 57 17 83 72 87 91 86 87 52 57 73 79 64 59 80 61 75 53 115 104 117 17 83 72 87 91 86 87 52 57 73 79 64 59 80 61 75 17 52 52 52 52 52 52 52 52 52 52 17 57 55 57 60 52 56 56 52 55 61 91 56 60 65 58 59 65 55 64 53 55 63 56 62 63 57 52 55 58 65 55 55 17 74 65 99 92 122 108 121 122 99 72 115 108 99 75 118 106 124 116 108 117 123 122 99 76 122 123 124 107 112 118 99 77 104 106 124 115 123 104 107 99 57 55 57 60 99 80 117 110 108 117 112 108 121 112 104 39 56 99 91 104 115 115 108 121 108 122 80 117 110 108 56 99 76 113 108 121 106 112 106 112 118 87 118 121 123 109 118 115 112 118 99 87 118 121 123 109 118 115 112 118 52 90 118 115 124 106 112 118 117 53 122 123 17 59 56 56 60 62 17 52 52 52 52 52 52 52 52 52 52 17 57 55 57 60 52 56 56 52 55 61 91 57 55 65 57 62 65 59 59 53 55 56 60 62 63 57 52 55 58 65 55 55 17 74 65 99 92 122 108 121 122 99 72 115 108 99 75 118 106 124 116 108 117 123 122 99 76 122 123 124 107 112 118 99 77 104 106 124 115 123 104 107 99 57 55 57 60 99 80 117 110 108 117 112 108 121 112 104 39 56 99 91 104 115 115 108 121 108 122 80 117 110 108 56 99 76 113 108 121 106 112 106 112 118 84 104 121 122 89 118 125 108 121 99 84 104 121 122 89 118 125 108 121 53 122 123 17 56 60 63 58 56 17 52 52 52 52 52 52 52 52 52 52 17 17 52 52 52 52 52 52 52 52 52 52 17 52 52 52 52 52 52 52 52 52 52 17 57 55 57 60 52 56 56 52 55 61 91 56 63 65 60 64 65 55 58 53 55 55 61 62 63 57 52 55 58 65 55 55 17 74 65 99 92 122 108 121 122 99 72 115 108 99 75 118 106 124 116 108 117 123 122 99 76 122 123 124 107 112 118 99 77 104 106 124 115 123 104 107 99 57 55 57 60 99 80 117 110 108 117 112 108 121 112 104 39 56 99 126 112 117 107 118 126 122 61 59 52 92 122 108 121 77 112 115 108 122 99 77 112 115 108 86 124 123 122 99 87 118 121 123 109 118 115 112 118 52 84 108 123 111 118 107 86 105 113 108 106 123 53 122 123 17 58 64 59 59 63 17 52 52 52 52 52 52 52 52 52 52 17 57 55 57 60 52 56 56 52 55 61 91 57 58 65 58 63 65 59 63 53 59 60 56 62 61 59 52 55 58 65 55 55 17 74 65 99 92 122 108 121 122 99 72 115 108 99 75 118 106 124 116 108 117 123 122 99 76 122 123 124 107 112 118 99 77 104 106 124 115 123 104 107 99 57 55 57 60 99 80 117 110 108 117 112 108 121 112 104 39 56 99 126 112 117 107 118 126 122 61 59 52 92 122 108 121 77 112 115 108 122 99 77 112 115 108 86 124 123 122 99 87 118 121 123 109 118 115 112 118 52 84 108 123 111 118 107 86 105 113 108 106 123 53 122 123 17 60 57 59 64 64 17 52 52 52 52 52 52 52 52 52 52 17 17))!
