@@ -301,23 +301,30 @@ test06WithMock_CashierDoesNotSaleWhenTheCreditCardHasNoCredit
 
 !classDefinition: #InterfaceTest category: #TusLibros!
 TestCase subclass: #InterfaceTest
-	instanceVariableNames: 'testObjectsFactory'
+	instanceVariableNames: 'testObjectsFactory debitBehavior'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'TusLibros'!
 
-!InterfaceTest methodsFor: 'setUp' stamp: 'LU 11/16/2025 17:36:04'!
+!InterfaceTest methodsFor: 'setUp' stamp: 'AC 11/17/2025 16:19:33'!
 setUp 
 
-	testObjectsFactory := StoreTestObjectsFactory new.! !
+	testObjectsFactory := StoreTestObjectsFactory new.
+	debitBehavior := [ :anAmount :aCreditCard | ]! !
 
 
-!InterfaceTest methodsFor: 'tests' stamp: 'LU 11/16/2025 17:59:07'!
+!InterfaceTest methodsFor: 'merchant processor protocol' stamp: 'AC 11/17/2025 16:20:23'!
+debit: anAmount from: aCreditCard 
+
+	^debitBehavior value: anAmount value: aCreditCard ! !
+
+
+!InterfaceTest methodsFor: 'tests' stamp: 'AC 11/17/2025 16:27:25'!
 test01CreateCartReturnsErrorWhenCredentialsAreIncorrect
 
 |interface|
 
-interface := testObjectsFactory createEmptyInterface.
+interface := testObjectsFactory createEmptyInterfaceWithMerchantProcessor: self.
 
 self 
 		should: [interface createCart: '00001' authenticateWith: 'wrong password'.]
@@ -325,23 +332,23 @@ self
 		withExceptionDo: [ :anError |
 			self assert: anError messageText = Interface invalidCredentialsErrorMessage.]! !
 
-!InterfaceTest methodsFor: 'tests' stamp: 'LU 11/16/2025 18:48:24'!
+!InterfaceTest methodsFor: 'tests' stamp: 'AC 11/17/2025 16:47:58'!
 test02CreateCartReturnsCartIDWhenCredentialsAreCorrect
 
 |interface cartID|
 
-interface := testObjectsFactory createInterfaceWithDefaultUser.
+interface := testObjectsFactory createInterfaceWithDefaultUserAndMerchantProcessor: self .
 
 cartID := interface createCart: testObjectsFactory defaultUser authenticateWith: testObjectsFactory defaultPassword.
 		
 self assert: (interface listCart: cartID ) isEmpty.! !
 
-!InterfaceTest methodsFor: 'tests' stamp: 'LU 11/16/2025 19:06:27'!
+!InterfaceTest methodsFor: 'tests' stamp: 'AC 11/17/2025 16:48:05'!
 test03CreatingMoreThanOneCartReturnsDifferentIDs
 
 |interface cartID cartID2 |
 
-interface := testObjectsFactory createInterfaceWithDefaultUser.
+interface := testObjectsFactory createInterfaceWithDefaultUserAndMerchantProcessor: self.
 
 cartID := interface createCart: testObjectsFactory defaultUser authenticateWith: testObjectsFactory defaultPassword.
 
@@ -349,12 +356,12 @@ cartID2 := interface createCart: testObjectsFactory defaultUser authenticateWith
 		
 self deny: cartID  = cartID2.! !
 
-!InterfaceTest methodsFor: 'tests' stamp: 'LU 11/16/2025 20:27:30'!
+!InterfaceTest methodsFor: 'tests' stamp: 'AC 11/17/2025 16:48:15'!
 test04ListCartWithRepeatedItemsShowsCorrectAmountOfItems
 
 |interface cartID expectedCartList|
 
-interface := testObjectsFactory createInterfaceWithDefaultUser.
+interface := testObjectsFactory createInterfaceWithDefaultUserAndMerchantProcessor: self.
 
 cartID := interface createCart: testObjectsFactory defaultUser authenticateWith: testObjectsFactory defaultPassword.
 
@@ -365,12 +372,12 @@ expectedCartList at: testObjectsFactory itemSellByTheStore put: 33.
 		
 self assert: (interface listCart: cartID) equals: expectedCartList. ! !
 
-!InterfaceTest methodsFor: 'tests' stamp: 'LU 11/16/2025 20:28:14'!
+!InterfaceTest methodsFor: 'tests' stamp: 'AC 11/17/2025 16:48:20'!
 test05AddingOneItemToCartModifiesCartItems
 
 |interface cartID|
 
-interface := testObjectsFactory createInterfaceWithDefaultUser.
+interface := testObjectsFactory createInterfaceWithDefaultUserAndMerchantProcessor: self.
 
 cartID := interface createCart: testObjectsFactory defaultUser authenticateWith: testObjectsFactory defaultPassword.
 
@@ -378,12 +385,12 @@ interface add: 1 of: testObjectsFactory itemSellByTheStore to: cartID .
 		
 self assert: ((interface listCart: cartID) at: testObjectsFactory itemSellByTheStore) = 1. ! !
 
-!InterfaceTest methodsFor: 'tests' stamp: 'LU 11/16/2025 19:36:59'!
+!InterfaceTest methodsFor: 'tests' stamp: 'AC 11/17/2025 16:48:24'!
 test06AddingItemsToInvalidCartReturnsError
 
 |interface cartID|
 
-interface := testObjectsFactory createInterfaceWithDefaultUser.
+interface := testObjectsFactory createInterfaceWithDefaultUserAndMerchantProcessor: self.
 
 cartID := interface createCart: testObjectsFactory defaultUser authenticateWith: testObjectsFactory defaultPassword.
 		
@@ -393,12 +400,12 @@ self
 		withExceptionDo: [ :anError |
 			self assert: anError messageText = Interface invalidCartIDErrorMessage.]! !
 
-!InterfaceTest methodsFor: 'tests' stamp: 'LU 11/16/2025 20:28:47'!
+!InterfaceTest methodsFor: 'tests' stamp: 'AC 11/17/2025 16:48:31'!
 test07AddingMultipleItemsToCartModifiesCartItems
 
 |interface cartID|
 
-interface := testObjectsFactory createInterfaceWithDefaultUser.
+interface := testObjectsFactory createInterfaceWithDefaultUserAndMerchantProcessor: self.
 
 cartID := interface createCart: testObjectsFactory defaultUser authenticateWith: testObjectsFactory defaultPassword.
 
@@ -406,12 +413,12 @@ interface add: 33 of: testObjectsFactory itemSellByTheStore to: cartID .
 		
 self assert: ((interface listCart: cartID) at: testObjectsFactory itemSellByTheStore) = 33. ! !
 
-!InterfaceTest methodsFor: 'tests' stamp: 'LU 11/16/2025 22:11:25'!
+!InterfaceTest methodsFor: 'tests' stamp: 'AC 11/17/2025 16:48:35'!
 test08CannotAddItemWithCartAfter30MinutesInactive
 
 |interface cartID|
 
-interface := testObjectsFactory createInterfaceWithDefaultUser.
+interface := testObjectsFactory createInterfaceWithDefaultUserAndMerchantProcessor: self.
 
 cartID := interface createCart: testObjectsFactory defaultUser authenticateWith: testObjectsFactory defaultPassword.
 
@@ -422,6 +429,93 @@ self
 		raise: Error - MessageNotUnderstood
 		withExceptionDo: [ :anError |
 			self assert: anError messageText = Interface cartTimeoutErrorMessage.]! !
+
+!InterfaceTest methodsFor: 'tests' stamp: 'AC 11/17/2025 16:48:38'!
+test09CannotCheckOutCartWithExpiredCard
+
+|interface cartID|
+
+interface := testObjectsFactory createInterfaceWithDefaultUserAndMerchantProcessor: self.
+
+cartID := interface createCart: testObjectsFactory defaultUser authenticateWith: testObjectsFactory defaultPassword.
+
+interface add: 33 of: testObjectsFactory itemSellByTheStore to: cartID.
+
+self 
+		should: [interface checkOut: cartID with: testObjectsFactory defaultCardNumber ownBy: testObjectsFactory defaultCardOwner expired: testObjectsFactory passedExpirationDate.]
+		raise: Error - MessageNotUnderstood
+		withExceptionDo: [ :anError |
+			self assert: anError messageText = Cashier canNotChargeAnExpiredCreditCardErrorMessage.]! !
+
+!InterfaceTest methodsFor: 'tests' stamp: 'AC 11/17/2025 16:22:11'!
+test10CannotCheckOutExpiredCart
+
+|interface cartID|
+
+interface := testObjectsFactory createInterfaceWithDefaultUserAndMerchantProcessor:self.
+
+cartID := interface createCart: testObjectsFactory defaultUser authenticateWith: testObjectsFactory defaultPassword.
+interface add: 33 of: testObjectsFactory itemSellByTheStore to: cartID.
+
+interface addMinutes: 31.
+
+self 
+		should: [interface checkOut: cartID with: testObjectsFactory defaultCardNumber ownBy: testObjectsFactory defaultCardOwner expired: testObjectsFactory validExpirationDate]
+		raise: Error - MessageNotUnderstood
+		withExceptionDo: [ :anError |
+			self assert: anError messageText = Interface cartTimeoutErrorMessage.]! !
+
+!InterfaceTest methodsFor: 'tests' stamp: 'AC 11/17/2025 16:48:41'!
+test11CheckoutRegistersASale
+	
+| cartID interface salesBook |
+interface := testObjectsFactory createInterfaceWithDefaultUserAndMerchantProcessor: self.
+
+cartID := interface createCart: testObjectsFactory defaultUser authenticateWith: testObjectsFactory defaultPassword.
+
+interface add: 33 of: testObjectsFactory itemSellByTheStore to: cartID.
+
+interface checkOut: cartID with: testObjectsFactory defaultCardNumber ownBy: testObjectsFactory defaultCardOwner expired: testObjectsFactory validExpirationDate .
+
+salesBook := interface salesBook.
+	self assert: salesBook size equals: 1.
+	self assert: salesBook first total equals: 330.! !
+
+!InterfaceTest methodsFor: 'tests' stamp: 'AC 11/17/2025 19:42:44'!
+test12CannotListPurchasesWithInvalidCredetials
+	
+| cartID interface purchases |
+interface := testObjectsFactory createInterfaceWithDefaultUserAndMerchantProcessor: self.
+
+cartID := interface createCart: testObjectsFactory defaultUser authenticateWith: testObjectsFactory defaultPassword.
+
+interface add: 33 of: testObjectsFactory itemSellByTheStore to: cartID.
+
+interface checkOut: cartID with: testObjectsFactory defaultCardNumber ownBy: testObjectsFactory defaultCardOwner expired: testObjectsFactory validExpirationDate .
+
+purchases := 'not yet instanced'.
+self 
+		should: [purchases := interface listPurchases: testObjectsFactory defaultUser athentication: '1234'.]
+		raise: Error - MessageNotUnderstood
+		withExceptionDo: [ :anError |
+			self assert: anError messageText = Interface invalidCredentialsErrorMessage .
+			self assert: purchases equals: 'not yet instanced']! !
+
+!InterfaceTest methodsFor: 'tests' stamp: 'AC 11/17/2025 19:15:59'!
+test13ListPurchasesWithCorrectCredentials
+	
+| cartID interface purchases |
+interface := testObjectsFactory createInterfaceWithDefaultUserAndMerchantProcessor: self.
+
+cartID := interface createCart: testObjectsFactory defaultUser authenticateWith: testObjectsFactory defaultPassword.
+
+interface add: 33 of: testObjectsFactory itemSellByTheStore to: cartID.
+
+interface checkOut: cartID with: testObjectsFactory defaultCardNumber ownBy: testObjectsFactory defaultCardOwner expired: testObjectsFactory validExpirationDate .
+
+purchases := interface listPurchases: testObjectsFactory defaultUser athentication: testObjectsFactory defaultPassword .
+
+self assert: purchases equals: (OrderedCollection with: (interface listCart: cartID)).! !
 
 
 !classDefinition: #Cart category: #TusLibros!
@@ -527,22 +621,22 @@ catalog := aCatalog .
 cart := Cart acceptingItemsOf: aCatalog .! !
 
 
-!CartSession methodsFor: 'adding' stamp: 'LU 11/16/2025 22:05:49'!
+!CartSession methodsFor: 'adding' stamp: 'AC 11/17/2025 16:42:20'!
 add: anAmount of: anItem
 
-	lastOperationTime := interface renewCartOperationTime: lastOperationTime.
+	self renewLastOperationTime .
 	
 	cart add: anAmount of: anItem .! !
 
 
-!CartSession methodsFor: 'processing' stamp: 'LU 11/16/2025 22:24:42'!
+!CartSession methodsFor: 'processing' stamp: 'AC 11/17/2025 16:42:40'!
 listCart
 	
 	|cartList|
 	
 	cartList := Dictionary new.
 	
-	lastOperationTime := interface renewCartOperationTime: lastOperationTime.
+	self renewLastOperationTime .
 	
 	catalog keys do: [:anItem | 
 					((cart occurrencesOf: anItem ) > 0) ifTrue: [
@@ -554,9 +648,22 @@ listCart
 	^cartList.! !
 
 
+!CartSession methodsFor: 'testing' stamp: 'AC 11/17/2025 16:08:04'!
+isEmpty
+	^cart isEmpty .! !
+
 !CartSession methodsFor: 'testing' stamp: 'LU 11/16/2025 22:15:02'!
 occurrencesOf: anItem 
 	^cart occurrencesOf: anItem .! !
+
+
+!CartSession methodsFor: 'as yet unclassified' stamp: 'AC 11/17/2025 16:42:00'!
+renewLastOperationTime
+	lastOperationTime := interface renewCartOperationTime: lastOperationTime .! !
+
+!CartSession methodsFor: 'as yet unclassified' stamp: 'AC 11/17/2025 16:18:32'!
+total
+	^cart total ! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -652,21 +759,22 @@ cartCanNotBeEmptyErrorMessage
 
 !classDefinition: #CreditCard category: #TusLibros!
 Object subclass: #CreditCard
-	instanceVariableNames: 'expiration'
+	instanceVariableNames: 'expirationDate owner cardNumber'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'TusLibros'!
 
-!CreditCard methodsFor: 'testing' stamp: 'HernanWilkinson 6/17/2013 18:39'!
+!CreditCard methodsFor: 'testing' stamp: 'AC 11/17/2025 16:10:20'!
 isExpiredOn: aDate 
 	
-	^expiration start < (Month month: aDate monthIndex year: aDate yearNumber) start ! !
+	^expirationDate start < (Month month: aDate monthIndex year: aDate yearNumber) start! !
 
 
-!CreditCard methodsFor: 'initialization' stamp: 'HernanWilkinson 6/17/2013 18:38'!
-initializeExpiringOn: aMonth 
-	
-	expiration := aMonth ! !
+!CreditCard methodsFor: 'initialization' stamp: 'AC 11/17/2025 16:06:19'!
+initializeExpiringOn: anExpirationDate ownedBy: anOwner withNumber: aCardNumber 
+	expirationDate := anExpirationDate.
+	owner := anOwner.
+	cardNumber := aCardNumber.! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -674,44 +782,66 @@ initializeExpiringOn: aMonth
 CreditCard class
 	instanceVariableNames: ''!
 
-!CreditCard class methodsFor: 'instance creation' stamp: 'HernanWilkinson 6/17/2013 18:38'!
-expiringOn: aMonth 
-	
-	^self new initializeExpiringOn: aMonth! !
+!CreditCard class methodsFor: 'instance creation' stamp: 'AC 11/17/2025 16:05:53'!
+expiringOn: anExpirationDate ownedBy: anOwner withNumber: aCardNumber 
+	^self new initializeExpiringOn: anExpirationDate ownedBy: anOwner withNumber: aCardNumber ! !
 
 
 !classDefinition: #Interface category: #TusLibros!
 Object subclass: #Interface
-	instanceVariableNames: 'users carts catalog dateAndTime'
+	instanceVariableNames: 'users cartsSessions catalog dateAndTime merchantProcessor salesBook usersCartSessions'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'TusLibros'!
 
-!Interface methodsFor: 'cart operations' stamp: 'LU 11/16/2025 19:38:14'!
+!Interface methodsFor: 'cart operations' stamp: 'AC 11/17/2025 12:03:12'!
 add: anAmount of: anItem to: aCartID 
 	
-	(carts at: aCartID ifAbsent: [self error: self class invalidCartIDErrorMessage]) add: anAmount of: anItem .! !
+	(cartsSessions at: aCartID ifAbsent: [self error: self class invalidCartIDErrorMessage]) add: anAmount of: anItem .! !
 
-!Interface methodsFor: 'cart operations' stamp: 'LU 11/16/2025 18:41:05'!
+!Interface methodsFor: 'cart operations' stamp: 'AC 11/17/2025 16:37:12'!
+assertCart: aCart isExpiredAt: aDateAndTime 
+	aCart isExpiredAt: aDateAndTime ! !
+
+!Interface methodsFor: 'cart operations' stamp: 'AC 11/17/2025 16:41:05'!
+checkOut: cartID with: aCardNumber ownBy: anOwner expired: anExpirationDate 
+	| cashier creditCard cart |
+	creditCard := self createCreditCard: aCardNumber ownBy: anOwner expired: anExpirationDate.
+	cart := cartsSessions at: cartID .
+	cart renewLastOperationTime.
+	cashier := Cashier toCheckout: cart charging: creditCard throught: merchantProcessor  on: dateAndTime registeringOn: salesBook.
+	cashier checkOut.! !
+
+!Interface methodsFor: 'cart operations' stamp: 'AC 11/17/2025 19:41:51'!
 createCart: aUserID authenticateWith: aPotentialPassword 
 
-self authenticateUser: aUserID trying: aPotentialPassword.
-
-^ self getNewCartID.
+	self authenticateUser: aUserID trying: aPotentialPassword.
+	
+	^(usersCartSessions at: aUserID ifAbsent:[usersCartSessions at:aUserID put: OrderedCollection new]) add:self getNewCartID.
 	! !
 
-!Interface methodsFor: 'cart operations' stamp: 'LU 11/16/2025 21:55:04'!
+!Interface methodsFor: 'cart operations' stamp: 'AC 11/17/2025 12:03:12'!
 getNewCartID
 
-carts at: carts size + 1 put: (CartSession acceptingItemsOf: catalog for: self at: dateAndTime ).
+cartsSessions at: cartsSessions size + 1 put: (CartSession acceptingItemsOf: catalog for: self at: dateAndTime ).
 
-	^ carts size.! !
+	^ cartsSessions size.! !
 
-!Interface methodsFor: 'cart operations' stamp: 'LU 11/16/2025 22:25:11'!
+!Interface methodsFor: 'cart operations' stamp: 'AC 11/17/2025 19:47:16'!
+listAllCarts: userCartsIDs 
+	| purchases |
+	purchases := OrderedCollection new.
+	userCartsIDs do:[:aCartSessionID |
+						(salesBook includes: (cartsSessions at: aCartSessionID)) ifTrue:[purchases add: (self listCart:  aCartSessionID)].
+					].
+				
+	^purchases.! !
+
+!Interface methodsFor: 'cart operations' stamp: 'AC 11/17/2025 12:03:12'!
 listCart: cartID 
 	|cart|
 	 
-	cart := carts at: cartID ifAbsent: [self error: self class invalidCartIDErrorMessage].
+	cart := cartsSessions at: cartID ifAbsent: [self error: self class invalidCartIDErrorMessage].
 							
 	^cart listCart.! !
 
@@ -744,13 +874,40 @@ renewCartOperationTime: lastOperationTime
 	^ dateAndTime .! !
 
 
-!Interface methodsFor: 'initialization' stamp: 'LU 11/16/2025 21:34:30'!
-initializeWith: aCatalog
+!Interface methodsFor: 'initialization' stamp: 'AC 11/17/2025 19:24:40'!
+initializeWithCatalog: aCatalog usingMerchantProcessor: aMerchantProcessor .
 
 	catalog := aCatalog.
+	merchantProcessor := aMerchantProcessor .
+	usersCartSessions := Dictionary new.
+	salesBook := OrderedCollection new.
 	users := Dictionary new.
-	carts := Dictionary new.
+	cartsSessions := Dictionary new.
 	dateAndTime := DateAndTime now.! !
+
+
+!Interface methodsFor: 'creditCard' stamp: 'AC 11/17/2025 16:04:37'!
+createCreditCard: aCardNumber ownBy: anOwner expired: anExpirationDate
+	| monthNumber yearNumber |
+	monthNumber := anExpirationDate asNumber // 10000.
+	yearNumber := anExpirationDate asNumber \\ 10000.
+	^CreditCard expiringOn: (Month month: monthNumber year: yearNumber) ownedBy: anOwner withNumber: aCardNumber .! !
+
+
+!Interface methodsFor: 'testing' stamp: 'AC 11/17/2025 16:49:04'!
+salesBook
+	^salesBook! !
+
+
+!Interface methodsFor: 'user operations' stamp: 'AC 11/17/2025 19:23:58'!
+listPurchases: aUserID athentication: aPotentialPassword 
+	
+	| userCartsIDs |
+	self  authenticateUser: aUserID trying: aPotentialPassword .
+	
+	userCartsIDs := usersCartSessions at: aUserID ifAbsent:[OrderedCollection new].
+	
+	^self listAllCarts: userCartsIDs. ! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -758,10 +915,10 @@ initializeWith: aCatalog
 Interface class
 	instanceVariableNames: ''!
 
-!Interface class methodsFor: 'instance creation' stamp: 'LU 11/16/2025 18:57:54'!
-with: aCatalog
+!Interface class methodsFor: 'instance creation' stamp: 'AC 11/17/2025 16:24:48'!
+withCatalog: aCatalog usingMerchantProcessor: aMerchantProcessor
 
-	^ self new initializeWith: aCatalog .! !
+	^ self new initializeWithCatalog: aCatalog usingMerchantProcessor: aMerchantProcessor .! !
 
 
 !Interface class methodsFor: 'error messages' stamp: 'LU 11/16/2025 21:37:44'!
@@ -826,28 +983,44 @@ initialize
 	today := DateAndTime now! !
 
 
-!StoreTestObjectsFactory methodsFor: 'credit card' stamp: 'HernanWilkinson 6/17/2013 18:37'!
+!StoreTestObjectsFactory methodsFor: 'credit card' stamp: 'AC 11/17/2025 12:33:55'!
+defaultCardNumber
+	^1234567891234567! !
+
+!StoreTestObjectsFactory methodsFor: 'credit card' stamp: 'AC 11/17/2025 12:34:22'!
+defaultCardOwner
+	^'Max Verstappen'! !
+
+!StoreTestObjectsFactory methodsFor: 'credit card' stamp: 'HernanWilkinson 6/17/2013 18:08'!
+defaultCatalog
+	
+	^ Dictionary new
+		at: self itemSellByTheStore put: self itemSellByTheStorePrice;
+		yourself ! !
+
+!StoreTestObjectsFactory methodsFor: 'credit card' stamp: 'AC 11/17/2025 16:13:04'!
 expiredCreditCard
 	
-	^CreditCard expiringOn: (Month month: today monthIndex year: today yearNumber - 1)! !
+	^CreditCard expiringOn: (Month month: today monthIndex year: today yearNumber - 1) ownedBy: 'Charles' withNumber: 1478523698521478! !
 
-!StoreTestObjectsFactory methodsFor: 'credit card' stamp: 'HernanWilkinson 6/17/2013 18:36'!
+!StoreTestObjectsFactory methodsFor: 'credit card' stamp: 'AC 11/17/2025 16:12:17'!
 notExpiredCreditCard
 	
-	^CreditCard expiringOn: (Month month: today monthIndex year: today yearNumber + 1)! !
+	^CreditCard expiringOn: (Month month: today monthIndex year: today yearNumber + 1) ownedBy: 'Charles' withNumber:7894561237894561! !
+
+!StoreTestObjectsFactory methodsFor: 'credit card' stamp: 'AC 11/17/2025 16:17:19'!
+passedExpirationDate
+	^(today monthIndex -1 )asString, today yearNumber asString ! !
+
+!StoreTestObjectsFactory methodsFor: 'credit card' stamp: 'AC 11/17/2025 16:17:50'!
+validExpirationDate
+		^today monthIndex asString, (today yearNumber+1) asString ! !
 
 
 !StoreTestObjectsFactory methodsFor: 'cart' stamp: 'HernanWilkinson 6/17/2013 18:08'!
 createCart
 	
 	^Cart acceptingItemsOf: self defaultCatalog! !
-
-!StoreTestObjectsFactory methodsFor: 'cart' stamp: 'HernanWilkinson 6/17/2013 18:08'!
-defaultCatalog
-	
-	^ Dictionary new
-		at: self itemSellByTheStore put: self itemSellByTheStorePrice;
-		yourself ! !
 
 
 !StoreTestObjectsFactory methodsFor: 'items' stamp: 'HernanWilkinson 6/17/2013 18:08'!
@@ -866,16 +1039,14 @@ itemSellByTheStorePrice
 	^10! !
 
 
-!StoreTestObjectsFactory methodsFor: 'interface' stamp: 'LU 11/16/2025 18:59:18'!
-createEmptyInterface
+!StoreTestObjectsFactory methodsFor: 'interface' stamp: 'AC 11/17/2025 16:28:16'!
+createEmptyInterfaceWithMerchantProcessor: aMerchantProcessor
 	
-	^ Interface with: self defaultCatalog.! !
+	^ Interface withCatalog: self defaultCatalog usingMerchantProcessor: aMerchantProcessor .! !
 
-!StoreTestObjectsFactory methodsFor: 'interface' stamp: 'LU 11/16/2025 18:14:06'!
-createInterfaceWithDefaultUser
-	
-	^ self createEmptyInterface createUser: self defaultUser withPassword: self defaultPassword.
-! !
+!StoreTestObjectsFactory methodsFor: 'interface' stamp: 'AC 11/17/2025 16:31:25'!
+createInterfaceWithDefaultUserAndMerchantProcessor: aMerchantProcessor 
+	^(Interface withCatalog: self defaultCatalog usingMerchantProcessor: aMerchantProcessor) createUser: self defaultUser withPassword: self defaultPassword .! !
 
 
 !StoreTestObjectsFactory methodsFor: 'user' stamp: 'LU 11/16/2025 18:15:49'!
@@ -957,4 +1128,4 @@ whenReceives: aSelector do: aBlock
 	^self doingAll: (Dictionary new
 		at: aSelector put: aBlock;
 		yourself)! !
-(Smalltalk at: #qq__ ifAbsentPut: [OrderedCollection new]) add: (#(54 111 118 116 108 54 115 124 106 112 104 54 80 117 110 108 54 74 92 80 90 52 85 92 76 93 86 54 115 112 117 124 127 61 59 17 54 111 118 116 108 54 115 124 106 112 104 54 80 117 110 108 54 74 92 80 90 52 85 92 76 93 86 54 115 112 117 124 127 61 59 54 74 124 112 122 92 117 112 125 108 121 122 112 123 128 52 62 61 59 56 53 112 116 104 110 108 17 124 117 112 127 17 83 112 117 124 127 39 61 53 56 59 53 55 52 58 59 52 110 108 117 108 121 112 106 17 127 63 61 102 61 59 17 86 119 108 117 39 90 116 104 115 115 123 104 115 114 39 74 118 110 98 90 119 124 121 100 39 93 84 39 98 83 112 125 108 91 128 119 112 117 110 74 118 80 117 123 108 121 119 121 108 123 108 121 39 93 84 84 104 114 108 121 53 118 122 106 118 110 52 108 108 116 53 58 61 61 57 100 17 95 56 56 17 92 117 112 127 39 105 124 112 115 123 39 118 117 39 86 106 123 39 39 62 39 57 55 57 60 39 56 59 65 55 63 65 57 62 39 74 118 116 119 112 115 108 121 65 39 60 53 59 53 55 39 57 55 56 61 55 61 55 64 17 83 112 125 108 91 128 119 112 117 110 74 118 80 117 123 108 121 119 121 108 123 108 121 39 93 84 84 104 114 108 121 53 118 122 106 118 110 52 108 108 116 53 58 61 61 57 39 124 124 112 107 65 39 57 61 104 55 55 106 105 106 52 58 56 60 107 52 59 106 108 107 52 104 108 60 105 52 61 60 55 58 60 56 56 61 58 106 58 62 39 86 106 123 39 39 62 39 57 55 57 60 17 83 112 125 108 91 128 119 112 117 110 74 118 110 112 123 39 93 84 84 104 114 108 121 53 118 122 106 118 110 52 108 108 116 53 58 61 61 57 39 124 124 112 107 65 39 57 61 104 55 55 106 105 106 52 58 56 60 107 52 59 106 108 107 52 104 108 60 105 52 61 60 55 58 60 56 56 61 58 106 58 62 39 86 106 123 39 39 62 39 57 55 57 60 17 93 84 65 39 57 55 57 60 56 55 55 61 56 64 58 59 39 111 108 121 117 104 117 71 84 104 106 73 118 118 114 52 87 121 118 52 107 108 52 79 108 121 117 104 117 52 57 53 115 118 106 104 115 65 75 118 106 124 116 108 117 123 122 54 93 84 54 118 119 108 117 122 116 104 115 115 123 104 115 114 52 125 116 39 75 104 123 108 65 39 84 118 117 39 86 106 123 39 61 39 56 57 65 58 59 65 57 56 39 57 55 57 60 39 74 118 116 116 112 123 79 104 122 111 65 39 108 107 58 60 59 63 61 39 87 115 124 110 112 117 122 65 39 57 55 57 60 56 55 55 61 56 64 58 59 39 111 108 121 117 104 117 71 84 104 106 73 118 118 114 52 87 121 118 52 107 108 52 79 108 121 117 104 117 52 57 53 115 118 106 104 115 65 75 118 106 124 116 108 117 123 122 54 93 84 54 118 119 108 117 122 116 104 115 115 123 104 115 114 52 125 116 17 199 175 8 128 17 56 64 57 53 56 61 63 53 56 53 56 57 56 17 115 124 106 112 104 52 80 107 108 104 87 104 107 52 58 52 56 59 72 83 74 61 17 115 124 106 112 104 52 80 107 108 104 87 104 107 52 58 52 56 59 72 83 74 61 17 52 52 52 52 52 52 52 52 52 52 17 57 55 57 60 52 56 55 52 57 59 91 57 56 65 55 56 65 60 63 53 57 61 64 64 61 57 52 55 58 65 55 55 17 54 111 118 116 108 54 115 124 106 112 104 54 80 117 110 108 54 87 118 121 123 109 118 115 112 118 52 76 113 108 121 106 112 106 112 118 53 122 123 17 60 60 63 55 17 52 52 52 52 52 52 52 52 52 52 17 57 55 57 60 52 56 55 52 57 62 91 56 63 65 58 62 65 60 59 53 62 64 62 60 58 57 52 55 58 65 55 55 17 54 111 118 116 108 54 115 124 106 112 104 54 75 108 122 106 104 121 110 104 122 54 87 118 121 123 109 118 115 112 118 52 76 113 108 121 106 112 106 112 118 39 47 57 48 53 122 123 17 57 58 61 63 62 17 52 52 52 52 52 52 52 52 52 52 17 57 55 57 60 52 56 55 52 58 56 91 57 56 65 55 59 65 58 60 53 59 62 62 60 60 63 52 55 58 65 55 55 17 54 111 118 116 108 54 115 124 106 112 104 54 75 108 122 106 104 121 110 104 122 54 87 118 121 123 109 118 115 112 118 52 90 118 115 124 106 112 118 117 53 122 123 17 56 64 62 56 58 17 52 52 52 52 52 52 52 52 52 52 17 57 55 57 60 52 56 56 52 56 55 91 56 63 65 57 61 65 56 55 53 57 56 55 64 52 55 58 65 55 55 17 54 111 118 116 108 54 115 124 106 112 104 54 75 108 122 106 104 121 110 104 122 54 91 124 122 83 112 105 121 118 122 53 122 123 17 64 58 58 55 17 52 52 52 52 52 52 52 52 52 52 17 57 55 57 60 52 56 56 52 56 61 91 56 61 65 58 62 65 59 60 53 61 63 55 55 57 62 52 55 58 65 55 55 17 54 111 118 116 108 54 115 124 106 112 104 54 80 117 110 108 54 80 123 108 121 104 106 112 118 117 57 54 80 123 108 121 104 106 112 118 117 57 54 91 124 122 83 112 105 121 118 122 52 58 60 53 122 123 17 57 55 56 59 57 17 52 52 52 52 52 52 52 52 52 52 17 17 52 52 52 52 52 52 52 52 52 52 17 52 52 52 52 52 52 52 52 52 52 17 57 55 57 60 52 56 55 52 57 62 91 56 60 65 56 55 65 57 62 53 60 55 60 60 61 52 55 58 65 55 55 17 54 111 118 116 108 54 115 124 106 112 104 54 80 117 110 108 54 74 92 80 90 52 85 92 76 93 86 54 115 112 117 124 127 61 59 52 92 122 108 121 77 112 115 108 122 54 77 112 115 108 86 124 123 122 54 87 118 121 123 109 118 115 112 118 52 76 113 108 121 106 112 106 112 118 53 122 123 17 64 57 55 63 17 52 52 52 52 52 52 52 52 52 52 17 57 55 57 60 52 56 55 52 57 62 91 56 64 65 56 55 65 57 64 53 63 58 56 57 60 58 52 55 58 65 55 55 17 54 111 118 116 108 54 115 124 106 112 104 54 80 117 110 108 54 74 92 80 90 52 85 92 76 93 86 54 115 112 117 124 127 61 59 52 92 122 108 121 77 112 115 108 122 54 77 112 115 108 86 124 123 122 54 87 118 121 123 109 118 115 112 118 52 76 113 108 121 106 112 106 112 118 53 122 123 17 57 56 58 56 56 17 52 52 52 52 52 52 52 52 52 52 17 57 55 57 60 52 56 55 52 57 63 91 57 57 65 55 61 65 55 61 53 55 59 59 56 63 59 52 55 58 65 55 55 17 54 111 118 116 108 54 115 124 106 112 104 54 80 117 110 108 54 74 92 80 90 52 85 92 76 93 86 54 115 112 117 124 127 61 59 52 92 122 108 121 77 112 115 108 122 54 77 112 115 108 86 124 123 122 54 87 118 121 123 109 118 115 112 118 52 76 113 108 121 106 112 106 112 118 52 79 104 122 72 106 106 118 124 117 123 53 122 123 17 57 58 62 63 60 17 52 52 52 52 52 52 52 52 52 52 17 57 55 57 60 52 56 55 52 58 56 91 55 55 65 55 55 65 57 62 53 58 62 55 62 61 57 52 55 58 65 55 55 17 54 111 118 116 108 54 115 124 106 112 104 54 80 117 110 108 54 74 92 80 90 52 85 92 76 93 86 54 115 112 117 124 127 61 59 52 92 122 108 121 77 112 115 108 122 54 77 112 115 108 86 124 123 122 54 87 118 121 123 109 118 115 112 118 52 76 113 108 121 106 112 106 112 118 52 91 108 122 123 122 72 110 121 108 110 104 107 118 122 53 122 123 17 57 60 62 60 59 17 52 52 52 52 52 52 52 52 52 52 17 57 55 57 60 52 56 55 52 58 56 91 57 56 65 60 64 65 56 64 53 55 63 59 64 59 52 55 58 65 55 55 17 54 111 118 116 108 54 115 124 106 112 104 54 80 117 110 108 54 74 92 80 90 52 85 92 76 93 86 54 115 112 117 124 127 61 59 52 92 122 108 121 77 112 115 108 122 54 77 112 115 108 86 124 123 122 54 87 118 121 123 109 118 115 112 118 52 87 104 121 123 108 57 53 122 123 17 57 57 61 60 58 17 52 52 52 52 52 52 52 52 52 52 17 57 55 57 60 52 56 56 52 55 59 91 56 57 65 58 58 65 56 57 53 63 59 59 57 63 52 55 58 65 55 55 17 54 111 118 116 108 54 115 124 106 112 104 54 80 117 110 108 54 74 92 80 90 52 85 92 76 93 86 54 115 112 117 124 127 61 59 52 92 122 108 121 77 112 115 108 122 54 77 112 115 108 86 124 123 122 54 87 118 121 123 109 118 115 112 118 52 90 118 115 124 106 112 118 117 53 122 123 17 58 55 57 55 61 17 52 52 52 52 52 52 52 52 52 52 17 57 55 57 60 52 56 56 52 55 59 91 56 57 65 60 61 65 57 64 53 59 55 63 63 57 63 52 55 58 65 55 55 17 54 111 118 116 108 54 115 124 106 112 104 54 80 117 110 108 54 74 92 80 90 52 85 92 76 93 86 54 115 112 117 124 127 61 59 52 92 122 108 121 77 112 115 108 122 54 77 112 115 108 86 124 123 122 54 87 118 121 123 109 118 115 112 118 52 90 118 115 124 106 112 118 117 53 122 123 17 58 57 57 62 60 17 52 52 52 52 52 52 52 52 52 52 17 57 55 57 60 52 56 56 52 56 55 91 57 56 65 55 59 65 60 56 53 63 56 55 57 63 60 52 55 58 65 55 55 17 54 111 118 116 108 54 115 124 106 112 104 54 80 117 110 108 54 74 92 80 90 52 85 92 76 93 86 54 115 112 117 124 127 61 59 52 92 122 108 121 77 112 115 108 122 54 77 112 115 108 86 124 123 122 54 91 124 122 83 112 105 121 118 122 53 122 123 17 59 64 62 57 17 52 52 52 52 52 52 52 52 52 52 17 57 55 57 60 52 56 56 52 56 61 91 57 57 65 57 61 65 60 64 53 58 61 57 58 57 59 52 55 58 65 55 55 17 54 111 118 116 108 54 115 124 106 112 104 54 80 117 110 108 54 74 92 80 90 52 85 92 76 93 86 54 115 112 117 124 127 61 59 52 92 122 108 121 77 112 115 108 122 54 77 112 115 108 86 124 123 122 54 91 124 122 83 112 105 121 118 122 53 122 123 17 57 63 62 64 60 17 52 52 52 52 52 52 52 52 52 52 17 17))!
+(Smalltalk at: #qq__ ifAbsentPut: [OrderedCollection new]) add: (#(74 65 99 92 122 108 121 122 99 72 115 108 99 75 118 106 124 116 108 117 123 122 99 76 122 123 124 107 112 118 99 77 104 106 124 115 123 104 107 99 57 55 57 60 99 80 117 110 108 117 112 108 121 112 104 39 56 99 126 112 117 107 118 126 122 61 59 17 74 65 99 92 122 108 121 122 99 72 115 108 99 75 118 106 124 116 108 117 123 122 99 76 122 123 124 107 112 118 99 77 104 106 124 115 123 104 107 99 57 55 57 60 99 80 117 110 108 117 112 108 121 112 104 39 56 99 126 112 117 107 118 126 122 61 59 99 74 124 112 122 92 117 112 125 108 121 122 112 123 128 52 62 61 59 56 91 124 122 83 112 105 121 118 122 80 117 123 108 121 109 104 106 108 53 112 116 104 110 108 17 94 112 117 58 57 17 61 53 57 17 95 61 59 17 86 119 108 117 39 90 116 104 115 115 123 104 115 114 39 74 118 110 98 90 119 124 121 100 39 93 84 39 98 83 112 125 108 91 128 119 112 117 110 74 118 80 117 123 108 121 119 121 108 123 108 121 39 93 84 84 104 114 108 121 53 118 122 106 118 110 52 108 108 116 53 58 61 61 57 100 17 94 112 117 107 118 126 122 17 94 112 117 58 57 39 105 124 112 115 123 39 118 117 39 84 104 121 39 39 56 39 57 55 57 60 39 55 56 65 55 59 65 57 57 39 78 84 91 39 74 118 116 119 112 115 108 121 65 39 59 53 57 53 56 39 74 118 116 119 104 123 112 105 115 108 39 74 115 104 117 110 39 63 53 55 53 56 39 47 123 104 110 122 54 89 76 83 76 72 90 76 102 63 55 56 54 109 112 117 104 115 48 17 83 112 125 108 91 128 119 112 117 110 74 118 80 117 123 108 121 119 121 108 123 108 121 39 93 84 84 104 114 108 121 53 118 122 106 118 110 52 108 108 116 53 58 61 61 57 39 124 124 112 107 65 39 57 61 104 55 55 106 105 106 52 58 56 60 107 52 59 106 108 107 52 104 108 60 105 52 61 60 55 58 60 56 56 61 58 106 58 62 39 84 104 121 39 39 56 39 57 55 57 60 17 83 112 125 108 91 128 119 112 117 110 74 118 110 112 123 39 93 84 84 104 114 108 121 53 118 122 106 118 110 52 108 108 116 53 58 61 61 57 39 124 124 112 107 65 39 57 61 104 55 55 106 105 106 52 58 56 60 107 52 59 106 108 107 52 104 108 60 105 52 61 60 55 58 60 56 56 61 58 106 58 62 39 84 104 121 39 39 56 39 57 55 57 60 17 93 84 65 39 57 55 57 60 56 55 55 61 56 64 58 59 39 111 108 121 117 104 117 71 84 104 106 73 118 118 114 52 87 121 118 52 107 108 52 79 108 121 117 104 117 52 57 53 115 118 106 104 115 65 75 118 106 124 116 108 117 123 122 54 93 84 54 118 119 108 117 122 116 104 115 115 123 104 115 114 52 125 116 39 75 104 123 108 65 39 84 118 117 39 86 106 123 39 61 39 56 57 65 58 59 65 57 56 39 57 55 57 60 39 74 118 116 116 112 123 79 104 122 111 65 39 108 107 58 60 59 63 61 39 87 115 124 110 112 117 122 65 39 57 55 57 60 56 55 55 61 56 64 58 59 39 111 108 121 117 104 117 71 84 104 106 73 118 118 114 52 87 121 118 52 107 108 52 79 108 121 117 104 117 52 57 53 115 118 106 104 115 65 75 118 106 124 116 108 117 123 122 54 93 84 54 118 119 108 117 122 116 104 115 115 123 104 115 114 52 125 116 17 199 175 217 109 17 56 64 57 53 56 61 63 53 57 56 55 53 56 55 57 17 83 72 87 91 86 87 52 57 73 79 64 59 80 61 75 53 115 104 117 17 83 72 87 91 86 87 52 57 73 79 64 59 80 61 75 17 52 52 52 52 52 52 52 52 52 52 17 57 55 57 60 52 56 56 52 56 56 91 56 64 65 56 57 65 59 59 53 63 60 55 58 61 61 52 55 58 65 55 55 17 74 65 99 92 122 108 121 122 99 72 115 108 99 75 118 106 124 116 108 117 123 122 99 76 122 123 124 107 112 118 99 77 104 106 124 115 123 104 107 99 57 55 57 60 99 80 117 110 108 117 112 108 121 112 104 39 56 99 91 104 115 115 108 121 108 122 80 117 110 108 56 99 76 113 108 121 106 112 106 112 118 91 124 122 83 112 105 121 118 122 99 91 124 122 83 112 105 121 118 122 53 122 123 17 56 55 55 61 61 17 52 52 52 52 52 52 52 52 52 52 17 57 55 57 60 52 56 56 52 56 62 91 56 57 65 55 56 65 57 59 53 63 59 63 62 55 57 52 55 58 65 55 55 17 74 65 99 92 122 108 121 122 99 72 115 108 99 75 118 106 124 116 108 117 123 122 99 76 122 123 124 107 112 118 99 77 104 106 124 115 123 104 107 99 57 55 57 60 99 80 117 110 108 117 112 108 121 112 104 39 56 99 91 104 115 115 108 121 108 122 80 117 110 108 56 99 76 113 108 121 106 112 106 112 118 91 124 122 83 112 105 121 118 122 99 91 124 122 83 112 105 121 118 122 52 80 117 123 108 121 109 104 106 108 53 122 123 17 58 63 55 56 59 17 52 52 52 52 52 52 52 52 52 52 17 17 52 52 52 52 52 52 52 52 52 52 17 52 52 52 52 52 52 52 52 52 52 17 57 55 57 60 52 56 56 52 56 63 91 55 55 65 57 57 65 58 59 53 62 55 61 63 58 60 52 55 58 65 55 55 17 74 65 99 92 122 108 121 122 99 72 115 108 99 75 118 106 124 116 108 117 123 122 99 76 122 123 124 107 112 118 99 77 104 106 124 115 123 104 107 99 57 55 57 60 99 80 117 110 108 117 112 108 121 112 104 39 56 99 126 112 117 107 118 126 122 61 59 52 92 122 108 121 77 112 115 108 122 99 77 112 115 108 86 124 123 122 99 91 124 122 83 112 105 121 118 122 52 80 117 123 108 121 109 104 106 108 53 122 123 17 58 61 63 62 55 17 52 52 52 52 52 52 52 52 52 52 17 17))!
